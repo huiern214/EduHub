@@ -32,6 +32,7 @@ import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,9 +52,10 @@ public class user_notesDetails extends AppCompatActivity {
     TextView noteTitle, noteDescription, noteCategory, noteDate, author,sizeTv, numberOfViews, numberOfDownloads, numberOfLikes;
     PDFView noteImg;
     ImageButton backBtn, downloadBtn;
-    ToggleButton likeBtn;
+    ToggleButton likeBtn, favouriteBtn;
     Button readBtn;
-    private DatabaseReference likeRef;
+    boolean isInMyFavourite=false;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,12 @@ public class user_notesDetails extends AppCompatActivity {
         //Retrieve the noteID from the intent
         noteId = getIntent().getStringExtra("noteId");
         loadNoteDetails(noteId);
-        Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null){
+            checkIsFavourite();
+        }
 
         noteTitle = findViewById(R.id.titleTv);
         noteDescription = findViewById(R.id.noteDescription);
@@ -78,6 +85,7 @@ public class user_notesDetails extends AppCompatActivity {
         readBtn = findViewById(R.id.readBtn);
         downloadBtn = findViewById(R.id.downloadBtn);
         likeBtn = findViewById(R.id.LikeBtn);
+        favouriteBtn = findViewById(R.id.favouriteBtn);
         numberOfLikes = findViewById(R.id.numberOfLikesTv);
 
         //handle click, go back
@@ -171,6 +179,24 @@ public class user_notesDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+
+        //handle toggle, favourite notes
+        favouriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    Toast.makeText(user_notesDetails.this, "You're not logged in", Toast.LENGTH_SHORT).show();
+                } else{
+                    if (isInMyFavourite){
+                        //in favourite, remove from favourite
+                        MyApplication.removeFromFavourite(user_notesDetails.this, noteId);
+                    } else{
+                        //not in favourite, add to favourite
+                        MyApplication.addToFavourite(user_notesDetails.this, noteId);
+                    }
+                }
             }
         });
     }
@@ -330,6 +356,34 @@ public class user_notesDetails extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         Log.d("Unable to load author name due to ",error.getMessage());
+                    }
+                });
+    }
+
+    private void checkIsFavourite(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("Favourites").child(noteId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        isInMyFavourite = snapshot.exists(); // true if exists, false if not exists
+                        if (isInMyFavourite){
+                            //exists in favourite
+                            favouriteBtn.setChecked(true);
+                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_border_24,0,0);
+                            //Toast.makeText(user_notesDetails.this, "Remove favourite", Toast.LENGTH_SHORT).show();
+                        }else{
+                            //not exists in favourite
+                            favouriteBtn.setChecked(false);
+                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_24,0,0);
+                            //Toast.makeText(user_notesDetails.this, "Add favourite", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(user_notesDetails.this, "Unable to check favourite list",Toast.LENGTH_SHORT).show();
                     }
                 });
     }
