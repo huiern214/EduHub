@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -17,7 +15,6 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.eduhub.databinding.RowNotesBinding;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
@@ -33,7 +30,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.ViewHolder> {
@@ -41,7 +37,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
     private List<user_modelPdf> noteList;
     private static final String TAG = "PDF_ADAPTER_TAG";
     private FirebaseAuth firebaseAuth;
-    private boolean isInMyFavourite=false, isInMyLike=false;
+    private boolean isInMyFavourite = false, isInMyLike = false;
     String noteId;
 
     public user_AdapterNote(Context context, List<user_modelPdf> noteList) {
@@ -57,8 +53,52 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_notes, parent, false);
+        //debugging skill needed
+        firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            // Initialize noteId when creating the view holder
+            noteId = noteList.get(viewType).getUid();
+            ViewHolder viewHolder = new ViewHolder(view);
+//            checkIsFavourite(noteId, viewHolder.getFavouriteBtn());
+            //checkIsLike();
+            return viewHolder;
+        }
         return new ViewHolder(view);
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        // Use position as viewType to set noteId in onCreateViewHolder
+        return position;
+    }
+
+    //Debugging needed for favourite button
+//    private void checkIsFavourite(String noteId, ToggleButton favouriteBtn) {
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+//        reference.child(firebaseAuth.getUid()).child("FavouriteNote").child(noteId)
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        isInMyFavourite = snapshot.exists(); // true if exists, false if not exists
+//                        if (isInMyFavourite) {
+//                            // Exists in favourite
+//                            // Handle favouriteBtn based on your logic
+//                            favouriteBtn.setChecked(true);
+//
+//                        } else {
+//                            // Not exists in favourite
+//                            // Handle favouriteBtn based on your logic
+//                            favouriteBtn.setChecked(false);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Log.e(TAG, "checkIsFavourite:onCancelled", error.toException());
+//                        Toast.makeText(context, "Unable to check favourite list", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//    }
 
     @Override
     public void onBindViewHolder(@NonNull user_AdapterNote.ViewHolder holder, int position) {
@@ -200,11 +240,33 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
             // Set click listener on the entire item view
             itemView.setOnClickListener(this);
 
-            //Click then add to favourite
+//          //debugging needed for favourite button
+//            favouriteBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (firebaseAuth.getCurrentUser() == null){
+//                        Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
+//                    } else{
+//                        if (isInMyFavourite){
+//                            //in favourite, remove from favourite
+//                            MyApplication.removeFromFavouriteNote(context, noteId);
+//                        } else{
+//                            //not in favourite, add to favourite
+//                            MyApplication.addToFavouriteNote(context, noteId);
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//
+//        public ToggleButton getFavouriteBtn(){
+//            return favouriteBtn;
+//        }
+
         }
 
         @Override
-        public void onClick(View view) {
+        public void onClick(View v) {
             // Handle item click here
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
