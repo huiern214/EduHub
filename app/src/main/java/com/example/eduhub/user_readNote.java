@@ -39,7 +39,7 @@ public class user_readNote extends AppCompatActivity {
         // Get noteId from intent that we passed in intent
         Intent intent = getIntent();
         noteId = intent.getStringExtra("noteId");
-        Toast.makeText(user_readNote.this, "NoteId: " + noteId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(user_readNote.this, "NoteId: " + noteId, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onCreate: NoteId: " + noteId);
 
         loadNoteDetails();
