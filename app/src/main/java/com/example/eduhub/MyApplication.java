@@ -48,7 +48,7 @@ public class MyApplication extends Application {
         return date;
     }
 
-    public static void addToFavourite (Context context, String noteId){
+    public static void addToFavouriteNote (Context context, String noteId){
         //we can add only if user is logged in
         //1) Check if user is logged in
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -65,7 +65,7 @@ public class MyApplication extends Application {
 
             //save to db
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-            ref.child(firebaseAuth.getUid()).child("Favourites").child(noteId)
+            ref.child(firebaseAuth.getUid()).child("FavouriteNote").child(noteId)
                     .setValue(hashMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -82,7 +82,7 @@ public class MyApplication extends Application {
         }
     }
 
-    public static void removeFromFavourite(Context context, String noteId){
+    public static void removeFromFavouriteNote(Context context, String noteId){
         //we can remove only if user is logged in
         //1) Check if user is logged in
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -92,7 +92,7 @@ public class MyApplication extends Application {
         } else{
             //remove from db
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-            ref.child(firebaseAuth.getUid()).child("Favourites").child(noteId)
+            ref.child(firebaseAuth.getUid()).child("FavouriteNote").child(noteId)
                     .removeValue()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -104,6 +104,68 @@ public class MyApplication extends Application {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(context,"Failed to removed from favourite due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    //Like function
+    public static void addToLikeNote (Context context, String noteId){
+        //we can add only if user is logged in
+        //1) Check if user is logged in
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() == null){
+            //not logged in, can't add to favourite list
+            Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
+        } else{
+            long timestamp = System.currentTimeMillis();
+
+            //setup data to add in firebase db of current user for favourite note
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("noteId",""+noteId);
+            hashMap.put("timestamp",""+timestamp);
+
+            //save to db
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+            ref.child(firebaseAuth.getUid()).child("LikeNote").child(noteId)
+                    .setValue(hashMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context,"Added to your like list",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context,"Failed to add to like due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    public static void removeFromLikeNote(Context context, String noteId){
+        //we can remove only if user is logged in
+        //1) Check if user is logged in
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() == null){
+            //not logged in, can't remove to favourite list
+            Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
+        } else{
+            //remove from db
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+            ref.child(firebaseAuth.getUid()).child("LikeNote").child(noteId)
+                    .removeValue()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context,"Removed from your like list",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context,"Failed to removed from like due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }

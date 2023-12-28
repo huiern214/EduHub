@@ -55,6 +55,7 @@ public class user_notesDetails extends AppCompatActivity {
     ToggleButton likeBtn, favouriteBtn;
     Button readBtn;
     boolean isInMyFavourite=false;
+    boolean isInMyLike=false;
     private FirebaseAuth firebaseAuth;
 
     @Override
@@ -70,6 +71,7 @@ public class user_notesDetails extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null){
             checkIsFavourite();
+            checkIsLike();
         }
 
         noteTitle = findViewById(R.id.titleTv);
@@ -178,7 +180,66 @@ public class user_notesDetails extends AppCompatActivity {
         likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    Toast.makeText(user_notesDetails.this, "You're not logged in", Toast.LENGTH_SHORT).show();
+                } else{
+                    DatabaseReference noteRef = FirebaseDatabase.getInstance().getReference().child("Notes").child(noteId);
+                    if (isInMyLike){
+                        //User unlike the note, decrement likes
+                        noteRef.runTransaction(new Transaction.Handler() {
+                            @NonNull
+                            @Override
+                            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                Integer currentLikes = mutableData.child("Likes").getValue(Integer.class);
+                                if (currentLikes == null){
+                                    currentLikes = 0;
+                                }
 
+                                //Decrement likes by 1
+                                mutableData.child("Likes").setValue(Math.max(currentLikes-1,0));
+
+                                //Set value back to the database
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                                if (!committed){
+                                    Log.e("LikeButton", "Failed to update likes:"+error.getMessage());
+                                }
+                            }
+                        });
+                        //in favourite, remove from favourite
+                        MyApplication.removeFromLikeNote(user_notesDetails.this, noteId);
+                    } else{
+                        //User liked the note, increment likes
+                        noteRef.runTransaction(new Transaction.Handler() {
+                            @NonNull
+                            @Override
+                            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                                Integer currentLikes = currentData.child("Likes").getValue(Integer.class);
+                                if (currentLikes== null){
+                                    currentLikes =0;
+                                }
+
+                                //Increment likes by 1
+                                currentData.child("Likes").setValue(currentLikes+1);
+
+                                //Set value back to the databse
+                                return Transaction.success(currentData);
+                            }
+
+                            @Override
+                            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                                if(!committed){
+                                    Log.e("LikeButton","Failed to update likes: "+error.getMessage());
+                                }
+                            }
+                        });
+                        //not in favourite, add to favourite
+                        MyApplication.addToLikeNote(user_notesDetails.this, noteId);
+                    }
+                }
             }
         });
 
@@ -191,10 +252,10 @@ public class user_notesDetails extends AppCompatActivity {
                 } else{
                     if (isInMyFavourite){
                         //in favourite, remove from favourite
-                        MyApplication.removeFromFavourite(user_notesDetails.this, noteId);
+                        MyApplication.removeFromFavouriteNote(user_notesDetails.this, noteId);
                     } else{
                         //not in favourite, add to favourite
-                        MyApplication.addToFavourite(user_notesDetails.this, noteId);
+                        MyApplication.addToFavouriteNote(user_notesDetails.this, noteId);
                     }
                 }
             }
@@ -362,7 +423,7 @@ public class user_notesDetails extends AppCompatActivity {
 
     private void checkIsFavourite(){
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.child(firebaseAuth.getUid()).child("Favourites").child(noteId)
+        reference.child(firebaseAuth.getUid()).child("FavouriteNote").child(noteId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -377,13 +438,39 @@ public class user_notesDetails extends AppCompatActivity {
                             favouriteBtn.setChecked(false);
                             //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_24,0,0);
                             //Toast.makeText(user_notesDetails.this, "Add favourite", Toast.LENGTH_SHORT).show();
-
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         Toast.makeText(user_notesDetails.this, "Unable to check favourite list",Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void checkIsLike(){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(firebaseAuth.getUid()).child("LikeNote").child(noteId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        isInMyLike = snapshot.exists(); // true if exists, false if not exists
+                        if (isInMyLike){
+                            //exists in favourite
+                            likeBtn.setChecked(true);
+                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_border_24,0,0);
+                            //Toast.makeText(user_notesDetails.this, "Remove favourite", Toast.LENGTH_SHORT).show();
+                        }else{
+                            //not exists in favourite
+                            likeBtn.setChecked(false);
+                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_24,0,0);
+                            //Toast.makeText(user_notesDetails.this, "Add favourite", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(user_notesDetails.this, "Unable to check like list",Toast.LENGTH_SHORT).show();
                     }
                 });
     }
