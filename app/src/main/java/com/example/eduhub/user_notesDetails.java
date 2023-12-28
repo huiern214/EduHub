@@ -225,7 +225,7 @@ public class user_notesDetails extends AppCompatActivity {
                                 //Increment likes by 1
                                 currentData.child("Likes").setValue(currentLikes+1);
 
-                                //Set value back to the databse
+                                //Set value back to the database
                                 return Transaction.success(currentData);
                             }
 

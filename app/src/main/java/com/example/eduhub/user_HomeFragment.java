@@ -155,35 +155,6 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                 return false;
             }
         });
-
-//        selectAllCategoryBtn = view.findViewById(R.id.allCategoryChoiceBtn);
-//        selectAllCategoryBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(requireContext(), "All", Toast.LENGTH_SHORT).show();
-//                DatabaseReference allRef = FirebaseDatabase.getInstance().getReference("Notes");
-//                allRef.addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        AllList.clear();
-//                        for (DataSnapshot sp : snapshot.getChildren()){
-//                            user_modelPdf notes = sp.getValue(user_modelPdf.class);
-//                            if (notes != null){
-//                                AllList.add(notes);
-//                                //Log.d(TAG, "Category: " + category.getCategory());
-//                            }
-//                        }
-//                        noteAdapter.setNoteList(AllList);
-//                        noteAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                        // Handle onCancelled if needed
-//                    }
-//                });
-//            }
-//        });
     }
 
     @Override

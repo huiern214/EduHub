@@ -23,8 +23,9 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
+            android:layout_alignParentRight="true"
             android:contentDescription="BackButton"
-            android:src="@drawable/baseline_keyboard_backspace_24" />
+            android:src="@drawable/baseline_close_24" />
 
         <!--TextView: Title -->
         <TextView
