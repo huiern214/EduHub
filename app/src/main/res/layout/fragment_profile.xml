@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/profile_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <LinearLayout
+                android:id="@+id/profile_pic_section"
                 android:layout_marginTop="50dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:elevation="10dp"
+                android:elevation="100dp"
                 android:orientation="vertical">
 
             <ImageView
@@ -24,13 +30,14 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/profile_pic_section"
+        android:layout_marginTop="-50dp"
         app:cardCornerRadius="28dp"
         android:layout_marginBottom="-20dp"
         >
 
         <LinearLayout
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -154,54 +161,40 @@
                 android:layout_margin="10dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:weightSum="3"
+                android:weightSum="2"
                 android:layout_below="@id/textLinearLayout"
                 >
 
                 <Button
-                    android:id="@+id/btnFragmentNotes"
+                    android:id="@+id/btnFragmentPosts"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Notes"
+                    android:text="@string/posts"
+                    android:textAlignment="center"
                     android:background="@drawable/button_category"
                     android:layout_marginHorizontal="5dp"
                     android:onClick="loadFragment1" />
 
                 <Button
-                    android:id="@+id/btnFragmentVideos"
+                    android:id="@+id/btnFragmentFavourite"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Videos"
+                    android:text="@string/favourite"
+                    android:textAlignment="center"
                     android:background="@drawable/button_category"
                     android:layout_marginEnd="5dp"
                     android:onClick="loadFragment2" />
-
-                <Button
-                    android:id="@+id/btnFragmentHistory"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="History"
-                    android:background="@drawable/button_category"
-                    android:layout_marginEnd="5dp"
-                    android:onClick="loadFragment3" />
-
             </LinearLayout>
-
-            <ScrollView android:id="@+id/ScrollView"
-                android:layout_width="match_parent"
-                android:contentDescription="content"
-                android:layout_height="300dp">
-                <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="300dp"
-                android:maxHeight="300dp"
-                />
-            </ScrollView>
+            <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="300dp"
+            android:maxHeight="300dp"
+            />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-</RelativeLayout>
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

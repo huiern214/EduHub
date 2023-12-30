@@ -2,6 +2,7 @@ package com.example.eduhub;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -54,8 +55,9 @@ public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView categoryTextView;
+        private final TextView categoryTextView;
 
+        @SuppressLint("ClickableViewAccessibility")
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             categoryTextView = itemView.findViewById(R.id.categoryBtn);
