@@ -33,12 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!--Progress Bar-->
-<!--            <ProgressBar-->
-<!--                android:id="@+id/progressBar"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent" />-->
-
         </RelativeLayout>
 
         <TextView
@@ -66,8 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/authorTv"
-            android:layout_toEndOf="@+id/pdfRl"
-            android:layout_toRightOf="@+id/favouriteBtn">
+            android:layout_toEndOf="@+id/pdfRl">
 
             <TextView
                 android:id="@+id/descriptionTv"
@@ -138,50 +131,18 @@
 
 
         <ToggleButton
-            android:id="@+id/favouriteBtn"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:id="@+id/edit_notes_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/favourite_button"
+            android:background="@drawable/edit_button"
             android:onClick="onCustomToggleClick"
             android:textOff=""
-            android:textOn="" />
-
-        <LinearLayout
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_above="@id/categoryTv"
-            android:layout_alignParentEnd="true">
-
-            <ToggleButton
-                android:id="@+id/LikeBtn"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/like_button"
-                android:onClick="onCustomToggleClick"
-                android:textOff=""
-                android:textOn=""
-                android:layout_gravity="center" />
-
-            <TextView
-                android:id="@+id/numberOfLikes"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:text="21 likes"
-                android:textSize="10sp"
-                android:layout_gravity="center"
-                android:textStyle="normal"
-                android:textColor="@color/dark_grey" />
-        </LinearLayout>
+            android:textOn=""
+            tools:ignore="TouchTargetSizeCheck" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

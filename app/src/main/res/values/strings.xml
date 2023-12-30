@@ -59,4 +59,8 @@
     <string name="forgot_password">Forgot Password</string>
     <string name="login">Login</string>
     <string name="create_an_account_instead">Create an Account Instead</string>
+    <string name="notes">Notes</string>
+    <string name="videos">Videos</string>
+    <string name="favourite">Favourite</string>
+    <string name="posts">Posts</string>
 </resources>

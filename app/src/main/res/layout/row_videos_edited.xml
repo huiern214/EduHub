@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="150dp"
+        android:layout_height="180dp" />
+
+    <ToggleButton
+        android:id="@+id/edit_video_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/edit_button"
+        android:onClick="onCustomToggleClick"
+        android:textOff=""
+        android:textOn=""
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/videoTitle"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:paddingLeft="5dp"
+        android:layout_above="@+id/numberOfViews"
+        android:text="Video Title that is longer than the width"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/numberOfViews"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:layout_alignBottom="@+id/videoView">
+        <TextView
+            android:paddingLeft="5dp"
+            android:id="@+id/numberOfViewTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20k"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="15sp"/>
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Views"
+            android:textColor="@color/white"
+            android:textStyle="normal"
+            android:textSize="15sp"/>
+    </LinearLayout>
+</RelativeLayout>
