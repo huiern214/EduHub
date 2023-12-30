@@ -171,4 +171,67 @@ public class MyApplication extends Application {
         }
     }
 
+    public static void addToReadNote(Context context, String noteId) {
+        // Check if the user is logged in
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() == null) {
+            // Not logged in, can't add to read history list
+            Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
+        } else {
+            long timestamp = System.currentTimeMillis();
+
+            // Setup data to add in the Firebase db of the current user for read note
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("noteId", "" + noteId);
+            hashMap.put("timestamp", "" + timestamp);
+
+            // Save to db
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+            DatabaseReference userReadNotesRef = ref.child(firebaseAuth.getUid()).child("ReadNote").child(noteId);
+
+            userReadNotesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // NoteId already exists in ReadNote, update the timestamp
+                        userReadNotesRef.child("timestamp").setValue("" + timestamp)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(context, "Updated timestamp in your read history", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Failed to update timestamp due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        // NoteId not present, add a new entry
+                        userReadNotesRef.setValue(hashMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(context, "Added to your read history", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Failed to add to read history due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(context, "Failed to check ReadNote due to " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+
 }

@@ -94,7 +94,7 @@ public class user_notesDetails extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(user_notesDetails.this, user_HomeFragment.class));
+                startActivity(new Intent(user_notesDetails.this, user_DashboardActivity.class));
             }
         });
 
@@ -125,6 +125,8 @@ public class user_notesDetails extends AppCompatActivity {
                     public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
                         // Handle completion
                         if (committed && dataSnapshot != null) {
+                            //Add the note to the user's read notes
+                            MyApplication.addToReadNote(user_notesDetails.this,noteId);
                             // Views updated successfully
                             Intent intent = new Intent(user_notesDetails.this, user_readNote.class);
                             intent.putExtra("noteId", noteId);
@@ -209,7 +211,7 @@ public class user_notesDetails extends AppCompatActivity {
                                 }
                             }
                         });
-                        //in favourite, remove from favourite
+                        //in like, remove from like
                         MyApplication.removeFromLikeNote(user_notesDetails.this, noteId);
                     } else{
                         //User liked the note, increment likes
@@ -432,7 +434,7 @@ public class user_notesDetails extends AppCompatActivity {
                             //exists in favourite
                             favouriteBtn.setChecked(true);
                             //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_border_24,0,0);
-                            //Toast.makeText(user_notesDetails.this, "Remove favourite", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(user_notesDetails.this, "Remove favourite ", Toast.LENGTH_SHORT).show();
                         }else{
                             //not exists in favourite
                             favouriteBtn.setChecked(false);
@@ -456,15 +458,13 @@ public class user_notesDetails extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         isInMyLike = snapshot.exists(); // true if exists, false if not exists
                         if (isInMyLike){
-                            //exists in favourite
+                            //exists in like
                             likeBtn.setChecked(true);
-                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_border_24,0,0);
-                            //Toast.makeText(user_notesDetails.this, "Remove favourite", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(user_notesDetails.this, "Unliked", Toast.LENGTH_SHORT).show();
                         }else{
-                            //not exists in favourite
+                            //not exists in like
                             likeBtn.setChecked(false);
-                            //favouriteBtn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.baseline_favorite_24,0,0);
-                            //Toast.makeText(user_notesDetails.this, "Add favourite", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(user_notesDetails.this, "Liked", Toast.LENGTH_SHORT).show();
                         }
                     }
 

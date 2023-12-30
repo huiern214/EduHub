@@ -19,6 +19,9 @@
         android:theme="@style/Theme.EduHub"
         tools:targetApi="31">
         <activity
+            android:name=".user_HomeFragment"
+            android:exported="false" />
+        <activity
             android:name=".user_readNote"
             android:exported="false" />
         <activity
