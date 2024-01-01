@@ -18,6 +18,7 @@ public class user_profileFragment extends Fragment {
 
         Button btnFragmentNotes = view.findViewById(R.id.btnFragmentPosts);
         Button btnFragmentVideos = view.findViewById(R.id.btnFragmentFavourite);
+        Button btnFragmentLikes = view.findViewById(R.id.btnFragmentLike);
 
         btnFragmentNotes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +33,14 @@ public class user_profileFragment extends Fragment {
             public void onClick(View v) {
                 // Load Fragment 2
                 loadFragment(new user_profileFragment_Favourite());
+            }
+        });
+
+        btnFragmentLikes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Load Fragment 3
+                loadFragment(new user_profileFragment_Like());
             }
         });
 

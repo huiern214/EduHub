@@ -168,24 +168,36 @@
                 <Button
                     android:id="@+id/btnFragmentPosts"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
                     android:text="@string/posts"
                     android:textAlignment="center"
                     android:background="@drawable/button_category"
-                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginHorizontal="10dp"
                     android:onClick="loadFragment1" />
 
                 <Button
                     android:id="@+id/btnFragmentFavourite"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.7"
                     android:text="@string/favourite"
                     android:textAlignment="center"
                     android:background="@drawable/button_category"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="10dp"
                     android:onClick="loadFragment2" />
+
+                <Button
+                    android:id="@+id/btnFragmentLike"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:text="@string/like"
+                    android:textAlignment="center"
+                    android:background="@drawable/button_category"
+                    android:layout_marginEnd="10dp"
+                    android:onClick="loadFragment2" />
+
             </LinearLayout>
             <FrameLayout
             android:id="@+id/fragment_container"

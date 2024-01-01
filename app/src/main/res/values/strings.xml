@@ -63,4 +63,5 @@
     <string name="videos">Videos</string>
     <string name="favourite">Favourite</string>
     <string name="posts">Posts</string>
+    <string name="like">Likes</string>
 </resources>

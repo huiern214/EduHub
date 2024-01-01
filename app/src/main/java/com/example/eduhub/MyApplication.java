@@ -48,6 +48,7 @@ public class MyApplication extends Application {
         return date;
     }
 
+    //Add to favourite function
     public static void addToFavouriteNote (Context context, String noteId){
         //we can add only if user is logged in
         //1) Check if user is logged in
@@ -82,28 +83,51 @@ public class MyApplication extends Application {
         }
     }
 
-    public static void removeFromFavouriteNote(Context context, String noteId){
-        //we can remove only if user is logged in
-        //1) Check if user is logged in
+    //Unlike function
+    public static void removeFromLikeNote(Context context, String noteId) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() == null){
-            //not logged in, can't remove to favourite list
-            Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
-        } else{
-            //remove from db
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-            ref.child(firebaseAuth.getUid()).child("FavouriteNote").child(noteId)
-                    .removeValue()
+        if (firebaseAuth.getCurrentUser() != null) {
+            DatabaseReference likeNoteRef = FirebaseDatabase.getInstance().getReference("Users")
+                    .child(firebaseAuth.getUid())
+                    .child("LikeNote")
+                    .child(noteId);
+
+            likeNoteRef.removeValue()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(context,"Removed from your favourite list",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Removed from Like", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context,"Failed to removed from favourite due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Failed to remove from Like: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    //Delete from favourite function
+    public static void removeFromFavouriteNote(Context context, String noteId) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            DatabaseReference favouriteNoteRef = FirebaseDatabase.getInstance().getReference("Users")
+                    .child(firebaseAuth.getUid())
+                    .child("FavouriteNote")
+                    .child(noteId);
+
+            favouriteNoteRef.removeValue()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Removed from Favourite", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Failed to remove from Favourite: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -144,33 +168,7 @@ public class MyApplication extends Application {
         }
     }
 
-    public static void removeFromLikeNote(Context context, String noteId){
-        //we can remove only if user is logged in
-        //1) Check if user is logged in
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() == null){
-            //not logged in, can't remove to favourite list
-            Toast.makeText(context, "You're not logged in", Toast.LENGTH_SHORT).show();
-        } else{
-            //remove from db
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-            ref.child(firebaseAuth.getUid()).child("LikeNote").child(noteId)
-                    .removeValue()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(context,"Removed from your like list",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context,"Failed to removed from like due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-    }
-
+    //Read function
     public static void addToReadNote(Context context, String noteId) {
         // Check if the user is logged in
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -232,6 +230,4 @@ public class MyApplication extends Application {
             });
         }
     }
-
-
 }
