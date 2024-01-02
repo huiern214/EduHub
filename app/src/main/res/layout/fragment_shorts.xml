@@ -1,18 +1,466 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".user_shortsFragment"
-    android:background="#F6C88B">
+    android:background="@color/black">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@color/black"-->
+<!--        android:orientation="vertical">-->
+
+    <!--        <ImageView-->
+<!--            android:id="@+id/iv_thumbnail"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+<!--    </RelativeLayout>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="25sp"
-        android:textColor="@color/white"
-        android:layout_centerInParent="true"
-        android:text="EduShorts Fragment" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
 
-</FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle_2">
+
+            <RelativeLayout
+                android:id="@+id/pdfRl"
+                android:layout_width="100dp"
+                android:layout_height="180dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/light_grey">
+
+                <!--PDF View-->
+                <com.github.barteksc.pdfviewer.PDFView
+                    android:id="@+id/pdfView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/titleTv"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:layout_toEndOf="@id/pdfRl"
+                android:maxLines="1"
+                android:text="Note title" />
+
+            <TextView
+                android:id="@+id/authorTv"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/titleTv"
+                android:layout_toEndOf="@+id/pdfRl"
+                android:text="Author Name"
+                android:textColor="@color/dark_grey" />
+
+            <RelativeLayout
+                android:id="@+id/descriptionTvRl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/authorTv"
+                android:layout_toEndOf="@+id/pdfRl">
+
+                <TextView
+                    android:id="@+id/descriptionTv"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="5dp"
+                    android:maxLines="4"
+                    android:text="Note Description"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/sizeTv"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_toEndOf="@id/pdfRl"
+                android:maxLines="1"
+                android:paddingBottom="10dp"
+                android:text="13 MB"
+                android:textColor="@color/dark_grey"
+                android:textSize="12dp"
+                tools:ignore="TextSizeCheck" />
+
+            <TextView
+                android:id="@+id/dateTv"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_toStartOf="@+id/categoryTv"
+                android:layout_toEndOf="@+id/sizeTv"
+                android:maxLines="1"
+                android:paddingBottom="10dp"
+                android:text="dd/MM/yyyy"
+                android:textAlignment="center"
+                android:textColor="@color/dark_grey"
+                android:textSize="12dp"
+                tools:ignore="TextSizeCheck" />
+
+            <TextView
+                android:id="@+id/categoryTv"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="5dp"
+                android:maxLines="1"
+                android:paddingBottom="10dp"
+                android:text="Category"
+                android:textColor="@color/dark_grey"
+                android:textSize="12dp"
+                tools:ignore="TextSizeCheck" />
+
+
+            <ToggleButton
+                android:id="@+id/edit_notes_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/edit_button"
+                android:onClick="onCustomToggleClick"
+                android:textOff=""
+                android:textOn=""
+                tools:ignore="TouchTargetSizeCheck" />
+        </RelativeLayout>
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/editProfileBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="10dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="View"
+        app:layout_constraintBottom_toBottomOf="@+id/authorName"
+        app:layout_constraintStart_toEndOf="@+id/authorName"
+        app:layout_constraintTop_toTopOf="@+id/authorName" />
+
+    <ImageView
+        android:id="@+id/shareBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="84dp"
+        android:elevation="16dp"
+        android:src="@drawable/share"
+        app:layout_constraintBaseline_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/addCommentBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="32dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="comment"
+        android:src="@drawable/__icon__add_comment_"
+        app:layout_constraintBottom_toTopOf="@+id/shareBtn"
+        app:layout_constraintEnd_toEndOf="@+id/shareBtn"
+        app:layout_constraintStart_toStartOf="@+id/shareBtn" />
+
+
+    <ToggleButton
+        android:id="@+id/favouriteBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/favourite_button"
+        android:onClick="onCustomToggleClick"
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintBottom_toTopOf="@+id/addCommentBtn"
+        app:layout_constraintEnd_toEndOf="@+id/addCommentBtn"
+        app:layout_constraintStart_toStartOf="@+id/addCommentBtn" />
+
+    <ToggleButton
+        android:id="@+id/LikeBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/like_button"
+        android:onClick="onCustomToggleClick"
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintBottom_toTopOf="@+id/favouriteBtn"
+        app:layout_constraintEnd_toEndOf="@+id/favouriteBtn"
+        app:layout_constraintStart_toStartOf="@+id/favouriteBtn" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toTopOf="@id/titleTv"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/profileImg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:srcCompat="@drawable/user_pic" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/descriptionTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="\@"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/cardView"
+        app:layout_constraintStart_toEndOf="@id/cardView"
+        app:layout_constraintTop_toTopOf="@+id/cardView" />
+
+    <TextView
+        android:id="@+id/authorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:text="Handle"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/cardView"
+        app:layout_constraintStart_toEndOf="@id/descriptionTv"
+        app:layout_constraintTop_toTopOf="@+id/cardView" />
+
+    <TextView
+        android:id="@+id/titleTv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="200dp"
+        android:text="Description description description description"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/shareBtn"
+        app:layout_constraintStart_toStartOf="@id/cardView" />
+
+    <ProgressBar
+        android:id="@+id/shorts_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTv"
+        tools:layout_editor_absoluteX="178dp" />
+
+
+    <!--    &lt;!&ndash;Toolbar&ndash;&gt;-->
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:id="@+id/toolbarRl"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:background="@drawable/shape_toolbar01">-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/backNotesBtn"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="56dp"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:layout_marginEnd="5dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:contentDescription="BackButton"-->
+<!--            android:src="@drawable/baseline_keyboard_backspace_24" />-->
+
+<!--        <TextView-->
+<!--            android:layout_marginLeft="10dp"-->
+<!--            android:id="@+id/textView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:drawablePadding="8dp"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:text="Notes details"-->
+<!--            android:textSize="25sp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:layout_toEndOf="@+id/backNotesBtn"/>-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/reportNote"-->
+<!--            android:contentDescription="report"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:src="@drawable/material_symbols_flag_outline"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:layout_marginRight="10dp"-->
+<!--            android:layout_alignParentRight="true"/>-->
+<!--    </RelativeLayout>-->
+
+    <!--Content-->
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:padding="8dp">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <ImageButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/like_button"/>-->
+
+<!--            <ImageButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/baseline_thumb_up_alt_24"/>-->
+
+
+
+<!--        </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:layout_constraintStart_toStartOf="parent">-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/readBtn"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:background="@drawable/shape_button01"-->
+<!--                    android:drawableLeft="@drawable/__icon__menu_book_"-->
+<!--                    android:text="READ"-->
+<!--                    android:textSize="20sp" />-->
+
+<!--                <ImageButton-->
+<!--                    android:contentDescription="download"-->
+<!--                    android:id="@+id/downloadBtn"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:background="@drawable/rectangle_3"-->
+<!--                    android:src="@drawable/baseline_download_24" />-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <ToggleButton-->
+<!--                        android:id="@+id/LikeBtn"-->
+<!--                        android:layout_width="48dp"-->
+<!--                        android:layout_height="48dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:background="@drawable/like_button"-->
+<!--                        android:onClick="onCustomToggleClick"-->
+<!--                        android:textOff=""-->
+<!--                        android:textOn="" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/numberOfLikesTv"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:text="21 likes"-->
+<!--                        android:textSize="12sp" />-->
+
+<!--                </LinearLayout>-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <ToggleButton-->
+<!--                        android:id="@+id/favouriteBtn"-->
+<!--                        android:layout_width="48dp"-->
+<!--                        android:layout_height="48dp"-->
+<!--                        android:background="@drawable/favourite_button"-->
+<!--                        android:onClick="onCustomToggleClick"-->
+<!--                        android:textOff=""-->
+<!--                        android:textOn="" />-->
+
+<!--                </LinearLayout>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/shareBtn"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginRight="10sp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:contentDescription="share"-->
+<!--                    android:background="@android:color/transparent"-->
+<!--                    android:src="@drawable/share" />-->
+<!--            </LinearLayout>-->
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
