@@ -24,7 +24,7 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@id/profileImg"
+                android:id="@+id/profileImgRl"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"
                 android:layout_marginLeft="5dp"
@@ -50,7 +50,7 @@
                 android:id="@+id/nameOfUserComment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/profileImg"
+                android:layout_toEndOf="@+id/profileImgRl"
                 android:text="Person Name"
                 android:textColor="@color/black"
                 android:textSize="20sp"
@@ -79,7 +79,7 @@
                 android:textSize="15dp"
                 android:textStyle="normal"
                 android:textColor="#838282"
-                android:layout_toEndOf="@id/profileImg"
+                android:layout_toEndOf="@id/profileImgRl"
                 android:text="I love this note sooo much" />
 
             <LinearLayout

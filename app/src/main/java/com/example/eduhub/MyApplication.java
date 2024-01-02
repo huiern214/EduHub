@@ -5,12 +5,14 @@ import android.content.Context;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -33,7 +35,11 @@ public class MyApplication extends Application {
 
         return date;
     }
-
+    public static final String formatTimestamp (Timestamp timestamp){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.ENGLISH); // Define your desired date format
+        String formattedDate = sdf.format(timestamp.toDate());
+        return formattedDate;
+    }
     public static void addToFavouriteNote (Context context, String noteId){
         //we can add only if user is logged in
         //1) Check if user is logged in

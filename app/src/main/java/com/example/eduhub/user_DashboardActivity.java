@@ -88,13 +88,13 @@ public class user_DashboardActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                if (item.getItemId()==R.id.home) {
+                if (item.getItemId() == R.id.home) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, homeFragment).commit();
                     return true;
-                } else if (item.getItemId()==R.id.shorts) {
+                } else if (item.getItemId() == R.id.shorts) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, shortsFragment).commit();
                     return true;
-                } else if (item.getItemId()==R.id.upload) {
+                } else if (item.getItemId() == R.id.upload) {
                     uploadDialog.setContentView(R.layout.dialog_upload_materials);
                     uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -123,16 +123,31 @@ public class user_DashboardActivity extends AppCompatActivity {
 
                     uploadDialog.show();
                     return true;
-                } else if (item.getItemId()==R.id.calender) {
+                } else if (item.getItemId() == R.id.calender) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, calendarFragment).commit();
                     return true;
-                } else if (item.getItemId()==R.id.user){
+                } else if (item.getItemId() == R.id.user) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, profileFragment).commit();
                     return true;
                 }
                 return true;
             }
         });
+    }
+    private void checkUser() {
+        //get current user
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null){
+            //not logged in, go to main screen
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else{
+            //logged in, get user info
+            String email = firebaseUser.getEmail();
+            //binding.subTitleTv.setText(email);
+        }
+    }
+}
 
         //handle click, logout
 //        binding.logoutBtn.setOnClickListener(new View.OnClickListener(){
@@ -142,7 +157,7 @@ public class user_DashboardActivity extends AppCompatActivity {
 //                checkUser();
 //            }
 //        });
-    }
+
 
 //    private void showPopupMenu(View view) {
 //        PopupMenu popupMenu = new PopupMenu(this,view);
@@ -164,17 +179,3 @@ public class user_DashboardActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private void checkUser() {
-        //get current user
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        if (firebaseUser == null){
-            //not logged in, go to main screen
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        } else{
-            //logged in, get user info
-            String email = firebaseUser.getEmail();
-            //binding.subTitleTv.setText(email);
-        }
-    }
-}

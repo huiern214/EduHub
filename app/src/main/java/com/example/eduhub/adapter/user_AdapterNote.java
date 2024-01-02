@@ -35,12 +35,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.ViewHolder> {
-    private Context context;
+    private final Context context;
     private List<Notes> noteList;
     private static final String TAG = "PDF_ADAPTER_TAG";
     private FirebaseAuth firebaseAuth;
@@ -89,7 +88,6 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
         holder.noteDescription.setText(note.getResource_description());
 //        holder.noteCategory.setText(note.getCategory_id());
         noteId = note.getNotes_id();
-        Log.d(TAG, "note id onbind" + noteId);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference categoriesRef = db.collection("category");
@@ -116,8 +114,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
                 });
 
         Timestamp timestamp = note.getResource_upload_datetime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss"); // Define your desired date format
-        String formattedDate = sdf.format(timestamp.toDate());
+        String formattedDate = MyApplication.formatTimestamp(timestamp);
         holder.timestamp.setText(formattedDate);
         checkIsLike(holder.likeBtn, noteId);
         checkIsFavourite(holder.favouriteBtn, noteId);
@@ -174,7 +171,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
 
     public void checkIsFavourite(ToggleButton favouriteBtn, String noteId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("user").document(firebaseAuth.getUid());
+        DocumentReference userRef = db.collection("user").document(Objects.requireNonNull(firebaseAuth.getUid()));
 
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -183,13 +180,9 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
                 // Check if the noteId exists in the array of references
                 isInMyFavourite = favouriteNotesRefs != null && favouriteNotesRefs.contains(db.collection("resource").document(noteId));
 
-                if (isInMyFavourite) {
-                    // Exists in favorite
-                    favouriteBtn.setChecked(true);
-                } else {
-                    // Not exists in favorite
-                    favouriteBtn.setChecked(false);
-                }
+                // Exists in favorite
+                // Not exists in favorite
+                favouriteBtn.setChecked(isInMyFavourite);
             }
         }).addOnFailureListener(e -> {
             Log.e("Note details", "Error checking favorite: " + e.getMessage());
@@ -198,7 +191,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
 
     public void checkIsLike(ToggleButton likeBtn, String noteId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("user").document(firebaseAuth.getUid());
+        DocumentReference userRef = db.collection("user").document(Objects.requireNonNull(firebaseAuth.getUid()));
 
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -207,13 +200,9 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
                 // Check if the noteId exists in the array of references
                 isInMyLike = likedNotesRefs != null && likedNotesRefs.contains(db.collection("resource").document(noteId));
 
-                if (isInMyLike) {
-                    // Exists in liked notes
-                    likeBtn.setChecked(true);
-                } else {
-                    // Not exists in liked notes
-                    likeBtn.setChecked(false);
-                }
+                // Exists in liked notes
+                // Not exists in liked notes
+                likeBtn.setChecked(isInMyLike);
             }
         }).addOnFailureListener(e -> {
             Log.e("Note details", "Error checking like: " + e.getMessage());
@@ -276,7 +265,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
                     public void onFailure(@NonNull Exception e) {
                         // Failed getting metadata
                         Log.e(TAG, "loadPdfSize:onFailure", e);
-                        Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -325,10 +314,12 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView noteTitle, noteDescription, noteCategory;
-        private TextView timestamp, noteSize, noteAuthor;
-        private PDFView pdfView;
-        private ToggleButton favouriteBtn, likeBtn;
+        private final TextView noteTitle;
+        private final TextView noteDescription;
+        private final TextView noteCategory;
+        private final TextView timestamp, noteSize, noteAuthor;
+        private final PDFView pdfView;
+        private final ToggleButton favouriteBtn, likeBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

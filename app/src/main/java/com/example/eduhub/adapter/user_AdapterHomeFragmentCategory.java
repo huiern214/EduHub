@@ -1,4 +1,4 @@
-package com.example.eduhub;
+package com.example.eduhub.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,18 +14,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.eduhub.CategoryClickListener;
+import com.example.eduhub.R;
 import com.example.eduhub.model.Category;
 
 import java.util.List;
 
-public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_homeFragmentCategoryAdapter.ViewHolder>{
+public class user_AdapterHomeFragmentCategory extends RecyclerView.Adapter<user_AdapterHomeFragmentCategory.ViewHolder>{
     private Context context;
     private static final String TAG = "CategoryAdapter";
     private List<Category> categoryList;
     private int selectedPosition = RecyclerView.NO_POSITION;
     private CategoryClickListener categoryClickListener;
 
-    public user_homeFragmentCategoryAdapter(Context context, List<Category> categoryList) {
+    public user_AdapterHomeFragmentCategory(Context context, List<Category> categoryList) {
         this.context = context;
         this.categoryList = categoryList;
     }

@@ -39,9 +39,9 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginRight="30dp"
                 android:layout_marginLeft="50dp"
-                android:text="Add Comment"
+                android:text="Report Note"
                 android:textAlignment="center"
-                android:textColor="#686BFF"
+                android:textColor="#FF1744"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -56,14 +56,14 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/commentTil"
+            android:id="@+id/reportNoteTil"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            app:startIconDrawable="@drawable/baseline_comment_24"
+            app:startIconDrawable="@drawable/flag1"
             android:textColorHint="#979797"
             android:hint="Comment"
             app:hintEnabled="false" >
@@ -72,9 +72,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rectangle_1"
-                android:id="@+id/commentEt"
+                android:id="@+id/reportNoteEt"
                 android:inputType="textCapSentences|textPersonName"
-                android:hint="Comment"
+                android:hint="Write down the problem"
                 android:textColorHint="#979797"
                 android:textSize="18sp"
                 android:textColor="@color/black"
@@ -82,15 +82,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/submitCommentBtn"
+            android:id="@+id/submitReportBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="30dp"
-            android:background="@drawable/shape_button01"
-            android:text="Add comment"
+            android:background="@drawable/button_report"
+            android:text="Report"
             android:textStyle="bold"
             android:textSize="18sp" />
 

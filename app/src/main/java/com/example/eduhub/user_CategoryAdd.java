@@ -54,10 +54,6 @@ public class user_CategoryAdd extends AppCompatActivity {
     TextInputEditText categoryNameEt;
     EditText searchCategoryEt;
     String category;
-    CardView categoryBtn;
-
-    String title, description;
-    Uri pdf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +67,6 @@ public class user_CategoryAdd extends AppCompatActivity {
         // Check user authentication status
         checkUser();
         loadCategories();
-
-//        Intent intent = getIntent();
-//        if (intent != null) {
-//            title = intent.getStringExtra("TITLE");
-//            description = intent.getStringExtra("DESCRIPTION");
-//            pdf = intent.getParcelableExtra("PDF");
-//
-//            Log.d("user_CategoryAdd", "Received Title: " + title);
-//            Log.d("user_CategoryAdd", "Received Description: " + description);
-//            Log.d("user_CategoryAdd", "Received PDF Uri: " + pdf);
-//
-//            sendData(title,description,pdf);
-//        }
 
         //edit text change listener, search
         searchCategoryEt = findViewById(R.id.searchCategoryEt);

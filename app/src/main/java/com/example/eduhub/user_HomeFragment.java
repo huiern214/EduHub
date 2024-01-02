@@ -21,11 +21,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eduhub.adapter.user_AdapterNote;
+import com.example.eduhub.adapter.user_AdapterHomeFragmentCategory;
 import com.example.eduhub.databinding.FragmentHomeBinding;
 import com.example.eduhub.model.Category;
 import com.example.eduhub.model.Notes;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,7 +42,7 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
 
     private FragmentHomeBinding binding;
     private RecyclerView recyclerViewCategory, recyclerViewNote;
-    private user_homeFragmentCategoryAdapter categoryAdapter;
+    private user_AdapterHomeFragmentCategory categoryAdapter;
     private List<Category> categoryList;
 
     private ArrayList<Notes> noteList, FilteredNoteList, AllList;
@@ -58,7 +58,7 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
         recyclerViewCategory = binding.CategoryRecyclerView;
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         categoryList = new ArrayList<>();
-        categoryAdapter = new user_homeFragmentCategoryAdapter(getContext(),categoryList);
+        categoryAdapter = new user_AdapterHomeFragmentCategory(getContext(),categoryList);
         categoryAdapter.setCategoryClickListener(this);  //Set the click listener for the adapter
         recyclerViewCategory.setAdapter(categoryAdapter);
 
