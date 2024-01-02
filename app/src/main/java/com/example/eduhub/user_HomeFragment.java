@@ -2,10 +2,8 @@ package com.example.eduhub;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
-import android.nfc.Tag;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,23 +14,26 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.eduhub.adapter.user_AdapterNote;
 import com.example.eduhub.databinding.FragmentHomeBinding;
+import com.example.eduhub.model.Category;
+import com.example.eduhub.model.Notes;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class user_HomeFragment extends Fragment implements CategoryClickListener{
     String[] item = {"All", "Most downloaded", "Most views", "Most likes"};
@@ -42,13 +43,13 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
     private FragmentHomeBinding binding;
     private RecyclerView recyclerViewCategory, recyclerViewNote;
     private user_homeFragmentCategoryAdapter categoryAdapter;
-    private List<user_ModelCategory> categoryList;
+    private List<Category> categoryList;
 
-    private ArrayList<user_modelPdf> noteList, FilteredNoteList, AllList;
+    private ArrayList<Notes> noteList, FilteredNoteList, AllList;
     private user_AdapterNote noteAdapter;
     private ImageButton selectAllCategoryBtn;
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
@@ -68,58 +69,70 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
         noteAdapter = new user_AdapterNote(getContext(), noteList);
         recyclerViewNote.setAdapter(noteAdapter);
 
-        //Retrieve category data from Firebase 
-        retrieveCategoriesFromFirebase();
-        retrieveNotesFromFirebase();
+        //Retrieve category data from Firebase
+        retrieveCategoriesFromFirestore();
+        retrieveNotesFromFirestore();
         
         return view;
     }
 
-    private void retrieveNotesFromFirebase() {
-        DatabaseReference notesRef = FirebaseDatabase.getInstance().getReference("Notes");
-        notesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                noteList.clear();
-                for (DataSnapshot notesSnapshot : snapshot.getChildren()){
-                    user_modelPdf notes = notesSnapshot.getValue(user_modelPdf.class);
-                    if (notes != null){
-                        noteList.add(notes);
-                        //Log.d(TAG, "Category: " + category.getCategory());
-                    }
-                }
-                noteAdapter.notifyDataSetChanged();
-            }
+    @SuppressLint({"NotifyDataSetChanged", "RestrictedApi"})
+    private void retrieveNotesFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notesRef = db.collection("resource");
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle onCancelled if needed
-            }
-        });
+        notesRef.whereEqualTo("resource_type", "notes")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        noteList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long resource_likes_long = document.getLong("resource_likes");
+                            int resource_likes = (int) resource_likes_long;
+                            Notes note = new Notes(document.getId(),
+                                    Objects.requireNonNull(document.getDocumentReference("category_id")).getId(),
+                                    document.getString("resource_description"),
+                                    document.getString("resource_file"), resource_likes,
+                                    document.getString("resource_name"),
+                                    document.getTimestamp("resource_upload_datetime"),
+                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
+//                            Notes note = document.toObject(Notes.class);
+                            noteList.add(note);
+                        }
+                        noteAdapter.notifyDataSetChanged();
+                    } else {
+                        // Handle errors here
+                        Log.w(TAG, "Error getting notes", task.getException());
+                    }
+                });
     }
 
-    private void retrieveCategoriesFromFirebase() {
-        DatabaseReference categoriesRef = FirebaseDatabase.getInstance().getReference("Categories");
-        categoriesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                categoryList.clear();
-                for (DataSnapshot categorySnapshot : snapshot.getChildren()){
-                    user_ModelCategory category = categorySnapshot.getValue(user_ModelCategory.class);
-                    if (category!=null){
-                        categoryList.add(category);
-                        //Log.d(TAG, "Category: " + category.getCategory());
-                    }
-                }
-                categoryAdapter.notifyDataSetChanged();
-            }
+    @SuppressLint({"RestrictedApi", "NotifyDataSetChanged"})
+    private void retrieveCategoriesFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference categoriesRef = db.collection("category");
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle onCancelled if needed
-            }
-        });
+        categoriesRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        categoryList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String category_id = document.getId(); // Get the document ID
+                            String category_name = document.getString("category_name");
+
+                            // Create your Category object with the document ID
+                            Category category = new Category(category_id, category_name);
+
+                            categoryList.add(category);
+                        }
+                        categoryAdapter.notifyDataSetChanged();
+                    } else {
+                        // Handle errors here
+                        Log.w(TAG, "Error getting categories", task.getException());
+                    }
+                });
     }
+
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
@@ -134,7 +147,7 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedItem = adapterView.getItemAtPosition(i).toString();
                 //display the selected item in the box
-                selectionFilterTv.getEditText().setText(selectedItem);
+                Objects.requireNonNull(selectionFilterTv.getEditText()).setText(selectedItem);
                 Toast.makeText(requireContext(), "Item: " + selectedItem, Toast.LENGTH_SHORT).show();
                 // Handle the item selection as needed
             }
@@ -157,32 +170,49 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
         });
     }
 
+    @SuppressLint({"RestrictedApi", "NotifyDataSetChanged"})
     @Override
-    public void onCategoryClick(String category) {
-        //Toast.makeText(requireContext(), "Clicked category: "+category, Toast.LENGTH_SHORT).show();
-        //init list before adding data
+    public void onCategoryClick(String category_id) {
+        // Initialize the list before adding data
         FilteredNoteList = new ArrayList<>();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Notes");
-        ref.orderByChild("category").equalTo(category)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        FilteredNoteList.clear();
-                        for (DataSnapshot ds : snapshot.getChildren()){
-                            //get data
-                            user_modelPdf note = ds.getValue(user_modelPdf.class);
-                            //add to list
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notesRef = db.collection("resource");
+
+        // Create a DocumentReference to the category document
+        DocumentReference categoryRef = db.collection("category").document(category_id);
+
+        notesRef.whereEqualTo("category_id", categoryRef)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long resource_likes_long = document.getLong("resource_likes");
+                            int resource_likes = (int) resource_likes_long;
+                            Notes note = new Notes(document.getId(),
+                                    Objects.requireNonNull(document.getDocumentReference("category_id")).getId(),
+                                    document.getString("resource_description"),
+                                    document.getString("resource_file"), resource_likes,
+                                    document.getString("resource_name"),
+                                    document.getTimestamp("resource_upload_datetime"),
+                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
+
                             FilteredNoteList.add(note);
                         }
-                        //setup adapter
+
+                        // Set up the adapter and notify data changes
                         noteAdapter.setNoteList(FilteredNoteList);
                         noteAdapter.notifyDataSetChanged();
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
 
+                    } else {
+                        // Handle errors here
+                        Log.w(TAG, "Error getting notes", task.getException());
                     }
                 });
     }
 
+    // Define an interface to handle the result of the asynchronous check
+    public interface CheckResultListener {
+        void onCheckResult(boolean result);
+    }
 }

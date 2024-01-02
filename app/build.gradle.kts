@@ -56,6 +56,7 @@ dependencies {
     // PDF view library
     implementation ("com.github.barteksc:android-pdf-viewer:2.8.2")
     implementation ("org.greenrobot:eventbus:3.2.0")
+    implementation("com.google.firebase:firebase-firestore:24.10.0")
 
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.5")

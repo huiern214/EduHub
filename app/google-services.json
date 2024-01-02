@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "1043770415155",
-    "firebase_url": "https://eduhub-78727-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "eduhub-78727",
-    "storage_bucket": "eduhub-78727.appspot.com"
+    "project_number": "52743842788",
+    "firebase_url": "https://eduhub-mad-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "eduhub-mad",
+    "storage_bucket": "eduhub-mad.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1043770415155:android:05bf19d909cb2c3c00ab46",
+        "mobilesdk_app_id": "1:52743842788:android:c74bf9d05d0ae8e0b6b5f1",
         "android_client_info": {
           "package_name": "com.example.eduhub"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAX1s28nCuetkeDaL4LZ0VH8ZFCkSnmCAw"
+          "current_key": "AIzaSyBSQPGkJxmCQ9mcCj_s2lPGToRWgEEB4-M"
         }
       ],
       "services": {

@@ -58,23 +58,9 @@
             android:textSize="30dp"
             android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/notesNameEt"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rectangle_2"
-            android:hint="Notes Name"
-            android:textColorHint="@color/dark_grey"
-            android:textColor="@color/black"
-            android:textSize="23dp"
-            android:drawableLeft="@drawable/baseline_mode_edit_outline_24"
-            android:drawablePadding="10dp"
-            android:padding="10dp"/>
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/chooseCategoryBtn"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/rectangle_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +72,20 @@
             android:textSize="23dp"
             android:textAlignment="textStart"
             android:padding="10dp"/>
+
+        <EditText
+            android:id="@+id/notesNameEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/rectangle_2"
+            android:drawableLeft="@drawable/baseline_mode_edit_outline_24"
+            android:drawablePadding="10dp"
+            android:hint="Notes Name"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/dark_grey"
+            android:textSize="23dp" />
 
         <EditText
             android:id="@+id/descriptionEt"

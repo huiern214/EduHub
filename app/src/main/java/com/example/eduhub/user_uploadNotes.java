@@ -1,11 +1,5 @@
 package com.example.eduhub;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,18 +15,27 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.eduhub.databinding.ActivityUserUploadNotesBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class user_uploadNotes extends AppCompatActivity {
 
@@ -41,7 +44,7 @@ public class user_uploadNotes extends AppCompatActivity {
     String categoryName,categortId;
     TextView pdfName;
     EditText titleNote, descriptionNote;
-    private String tilte = "", description = "", category = "", id="";
+    private String title = "", description = "", category = "", id="";
     int likes=0, views=0, download=0;
     //Passed Data
     String tempTitle, tempDescription, tempPdf;
@@ -151,14 +154,14 @@ public class user_uploadNotes extends AppCompatActivity {
 
         // Restore saved data if available
         if (savedInstanceState != null) {
-            tilte = savedInstanceState.getString(KEY_TITLE, "");
+            title = savedInstanceState.getString(KEY_TITLE, "");
             description = savedInstanceState.getString(KEY_DESCRIPTION, "");
             categoryName = savedInstanceState.getString(KEY_CATEGORY_NAME, "");
             categortId = savedInstanceState.getString(KEY_CATEGORY_ID, "");
             pdfUri = savedInstanceState.getParcelable(KEY_PDF_URI);
 
             // Update UI with restored data
-            binding.notesNameEt.setText(tilte);
+            binding.notesNameEt.setText(title);
             binding.descriptionEt.setText(description);
             // Update other UI elements as needed
         }
@@ -177,20 +180,20 @@ public class user_uploadNotes extends AppCompatActivity {
     private void restoreDataFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
 
-        tilte = sharedPreferences.getString(KEY_TITLE, "");
+        title = sharedPreferences.getString(KEY_TITLE, "");
         description = sharedPreferences.getString(KEY_DESCRIPTION, "");
         category = sharedPreferences.getString(KEY_CATEGORY_NAME, "");
         id = sharedPreferences.getString(KEY_CATEGORY_ID, "");
 
         // Update UI with the restored data
-        binding.notesNameEt.setText(tilte);
+        binding.notesNameEt.setText(title);
         binding.descriptionEt.setText(description);
     }
 
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         //Save data to be restored later
-        outState.putString(KEY_TITLE,tilte);
+        outState.putString(KEY_TITLE, title);
         outState.putString(KEY_DESCRIPTION,description);
         outState.putString(KEY_DESCRIPTION,category);
         outState.putString(KEY_CATEGORY_ID,categortId);
@@ -248,13 +251,13 @@ public class user_uploadNotes extends AppCompatActivity {
         Log.d(TAG,"validateData: validating data...");
 
         //get data
-        tilte = binding.notesNameEt.getText().toString().trim();
+        title = binding.notesNameEt.getText().toString().trim();
         description = binding.descriptionEt.getText().toString().trim();
         category = categoryName;
         id = categortId;
 
         //validate data
-        if (TextUtils.isEmpty(tilte)){
+        if (TextUtils.isEmpty(title)){
             Toast.makeText(this, "Enter title", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(description)) {
             Toast.makeText(this,"Enter description",Toast.LENGTH_SHORT).show();
@@ -264,7 +267,7 @@ public class user_uploadNotes extends AppCompatActivity {
             Toast.makeText(this, "Pick pdf", Toast.LENGTH_SHORT).show();
         } else{
             // All data is valid, store in ViewModel
-            userUploadNotesViewModel.getTitleLiveData().setValue(tilte);
+            userUploadNotesViewModel.getTitleLiveData().setValue(title);
             userUploadNotesViewModel.getDescriptionLiveData().setValue(description);
             userUploadNotesViewModel.getCategoryLiveData().setValue(category);
             userUploadNotesViewModel.getCategoryIdLiveData().setValue(id);
@@ -285,16 +288,8 @@ public class user_uploadNotes extends AppCompatActivity {
         //timestamp
         long timestamp = System.currentTimeMillis();
         
-        //Retrieve the name of the PDF file
-        pdfName = findViewById(R.id.pdfName);
-        String pdf = pdfName.getText().toString().trim();
-        pdf = getPDFDisplayName(pdfUri);
-        
-        //Set the name to the TextView
-        binding.pdfName.setText(pdf);
-        
         //path of notes in firebase storage
-        String filePathAndName = "Notes/"+timestamp;
+        String filePathAndName = "notes/"+timestamp;
         //storage reference
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(filePathAndName);
         storageReference.putFile(pdfUri)
@@ -307,10 +302,12 @@ public class user_uploadNotes extends AppCompatActivity {
                         //get note url 
                         Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
                         while(!uriTask.isSuccessful());
-                        String uploadNoteUrl = ""+uriTask.getResult();
+                        String uploadNoteUrl = "" +uriTask.getResult();
+
+                        Timestamp firebaseTimestamp = new Timestamp(timestamp / 1000, (int) ((timestamp % 1000) * 1000000));
                         
                         //upload to firebase db
-                        uploadNoteInfoToDb(uploadNoteUrl, timestamp);
+                        uploadNoteInfoToDb(uploadNoteUrl, firebaseTimestamp);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -350,54 +347,55 @@ public class user_uploadNotes extends AppCompatActivity {
         return displayName;
     }
 
-    private void uploadNoteInfoToDb(String uploadNoteUrl, long timestamp) {
-        //Step 3: Upload notes info to firebase db
-        Log.d(TAG, "uploadNoteToStorage: uploading note info to firebase db...");
+    private void uploadNoteInfoToDb(String uploadNoteUrl, Timestamp timestamp) {
+        // Step 3: Upload notes info to Firestore
+        Log.d(TAG, "uploadNoteToStorage: Uploading note info to Firestore...");
         progressDialog.setMessage("Uploading note info");
-
+    
         String uid = firebaseAuth.getUid();
+    
+        // Create DocumentReference for category and user
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference categoryRef = db.collection("category").document(id);
+        DocumentReference userRef = db.collection("user").document(uid);
+    
+        // Setup data to upload
+        Map<String, Object> noteData = new HashMap<>();
+        noteData.put("category_id", categoryRef); // Use DocumentReference
+        noteData.put("resource_description", description);
+        noteData.put("resource_downloads", download);
+        noteData.put("resource_file", uploadNoteUrl);
+        noteData.put("resource_likes", likes);
+        noteData.put("resource_name", title);
+        noteData.put("resource_type", "notes");
+        noteData.put("resource_upload_datetime", timestamp);
+        noteData.put("resource_views", views);
+        noteData.put("user_id", userRef); // Use DocumentReference
+    
+        CollectionReference notesRef = db.collection("resource");
 
-        //setup data to upload
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("uid",""+uid);
-        hashMap.put("author_uid",uid);
-        hashMap.put("id",""+timestamp);
-        hashMap.put("title",""+tilte);
-        hashMap.put("description",""+description);
-        hashMap.put("category",""+categoryName);
-        hashMap.put("category_id",id);
-        hashMap.put("url",""+uploadNoteUrl);
-        hashMap.put("timestamp",timestamp);
-        hashMap.put("Likes",likes);
-        hashMap.put("Views",views);
-        hashMap.put("Download",download);
+        // Add the note data to Firestore
+        notesRef.add(noteData)
+                .addOnSuccessListener(documentReference -> {
+                    // Document was successfully added, and documentReference now contains the document ID
+                    String noteId = documentReference.getId();
+                    Log.d(TAG, "onSuccess: Successfully uploaded. Document ID: " + noteId);
 
-        Intent intent1 = new Intent (user_uploadNotes.this, user_notesDetails.class);
-        intent1.putExtra("noteId", ""+timestamp);
-        startActivity(intent1);
+                    progressDialog.dismiss();
+                    Toast.makeText(user_uploadNotes.this, "Successfully uploaded", Toast.LENGTH_SHORT).show();
 
-        //db reference: DB > Notes
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Notes");
-        ref.child(""+timestamp)
-                .setValue(hashMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d(TAG,"onSuccess: Successfully uploaded...");
-                        Toast.makeText(user_uploadNotes.this,"Successfully uploaded",Toast.LENGTH_SHORT).show();
-                    }
+                    // Pass the document ID to the next activity
+                    Intent intent1 = new Intent(user_uploadNotes.this, user_notesDetails.class);
+                    intent1.putExtra("noteId", noteId); // Pass the document ID
+                    startActivity(intent1);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Log.d(TAG, "onFailure: Failed to upload to db due to "+e.getMessage());
-                        Toast.makeText(user_uploadNotes.this,"Failed to upload to db due to "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Log.e(TAG, "onFailure: Failed to upload to Firestore due to " + e.getMessage());
+                    Toast.makeText(user_uploadNotes.this, "Failed to upload to Firestore due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-
     }
-
+    
     private void pdfPickIntent() {
         Log.d(TAG, "pdfPickIntent: starting pdf pick intent");
         Intent intent = new Intent();
@@ -414,6 +412,13 @@ public class user_uploadNotes extends AppCompatActivity {
             Log.d(TAG, "onActivityResult: PDF Picked");
             pdfUri = data.getData();
             Log.d(TAG, "onActivityResult: URI " + pdfUri);
+
+            // Retrieve the name of the PDF file
+            String pdfName = getPDFDisplayName(pdfUri);
+
+            // Set the name to the TextView
+            TextView pdfNameTextView = findViewById(R.id.pdfName);
+            pdfNameTextView.setText(pdfName);
         } else {
             Log.d(TAG, "onActivityResult: Cancelled picking pdf");
             Toast.makeText(this, "Cancelled picking pdf", Toast.LENGTH_SHORT).show();

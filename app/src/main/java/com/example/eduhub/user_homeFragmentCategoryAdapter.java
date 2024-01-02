@@ -1,33 +1,31 @@
 package com.example.eduhub;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.eduhub.model.Category;
+
 import java.util.List;
 
 public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_homeFragmentCategoryAdapter.ViewHolder>{
     private Context context;
     private static final String TAG = "CategoryAdapter";
-    private List<user_ModelCategory> categoryList;
+    private List<Category> categoryList;
     private int selectedPosition = RecyclerView.NO_POSITION;
     private CategoryClickListener categoryClickListener;
 
-    public user_homeFragmentCategoryAdapter(Context context, List<user_ModelCategory> categoryList) {
+    public user_homeFragmentCategoryAdapter(Context context, List<Category> categoryList) {
         this.context = context;
         this.categoryList = categoryList;
     }
@@ -45,7 +43,7 @@ public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        user_ModelCategory category = categoryList.get(position);
+        Category category = categoryList.get(position);
         holder.bind(category,position);
     }
 
@@ -73,12 +71,13 @@ public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_
 
                         // Invoke the listener with the selected category
                         if (categoryClickListener != null){
-                            String category = categoryList.get(adapterPosition).getCategory();
-                            categoryClickListener.onCategoryClick(category);
+                            String category_id = categoryList.get(adapterPosition).getCategory_id();
+                            String category_name = categoryList.get(adapterPosition).getCategory_name();
+                            categoryClickListener.onCategoryClick(category_id);
 
                             // Use the context from the categoryTextView to display the toast
-                            Log.d(TAG ,category);
-                            Toast.makeText(categoryTextView.getContext(), category, Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, category_name);
+                            Toast.makeText(categoryTextView.getContext(), category_name, Toast.LENGTH_SHORT).show();
                         }
                     }
                     return false; // indicate that the touch event is not consumed
@@ -86,8 +85,8 @@ public class user_homeFragmentCategoryAdapter extends RecyclerView.Adapter<user_
             });
         }
 
-        public void bind(user_ModelCategory category, int position) {
-            categoryTextView.setText(category.getCategory());
+        public void bind(Category category, int position) {
+            categoryTextView.setText(category.getCategory_name());
 
             // Reset the text color and background color for all categories
             categoryTextView.setTextColor(Color.parseColor("#686BFF"));
