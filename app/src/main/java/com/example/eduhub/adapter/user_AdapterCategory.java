@@ -1,4 +1,4 @@
-package com.example.eduhub;
+package com.example.eduhub.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eduhub.databinding.RowCategoriesBinding;
-import com.example.eduhub.user_ModelCategory;
+import com.example.eduhub.model.Category;
 import com.example.eduhub.user_filterCategory;
 import com.example.eduhub.user_uploadNotes;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCategory.HolderCategory> implements Filterable {
     public Context context;
-    public ArrayList<user_ModelCategory> categoryArrayList,filterList;
+    public ArrayList<Category> categoryArrayList,filterList;
     private OnItemClickListener listener;
 
     //view binding
@@ -37,7 +37,7 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
     Uri pdfUri;
 
 
-    public user_AdapterCategory (Context context, ArrayList<user_ModelCategory> categoryArrayList){
+    public user_AdapterCategory (Context context, ArrayList<Category> categoryArrayList){
         this.context = context;
         this.categoryArrayList = categoryArrayList;
         this.filterList = categoryArrayList;
@@ -54,7 +54,7 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
 //    }
 
     public interface OnItemClickListener{
-        void onItemClick(user_ModelCategory category);
+        void onItemClick(Category category);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -72,14 +72,15 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
     @Override
     public void onBindViewHolder(@NonNull user_AdapterCategory.HolderCategory holder, int position) {
         //get data
-        user_ModelCategory model = categoryArrayList.get(position);
-        String id = model.getId();
-        String category = model.getCategory();
-        String uid = model.getUid();
-        long timestamp = model.getTimestamp();
+        Category model = categoryArrayList.get(position);
+//        String category = model.getCategory();
+//        String uid = model.getUid();
+//        long timestamp = model.getTimestamp();
+        String category_id = model.getCategory_id();
+        String category_name = model.getCategory_name();
 
         //set data
-        holder.categoryTv.setText(category);
+        holder.categoryTv.setText(category_name);
 
         //handle choose Category
         holder.categoryTv.setOnClickListener(new View.OnClickListener() {
@@ -100,8 +101,8 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
                         holder.categoryTv.setTextColor(0xFF000000); // Set the default text color
 
                         // Pass the category id and category name to another class
-                        String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getId();
-                        String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory();
+                        String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getCategory_id();
+                        String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory_name();
                         passCategoryNameToOtherClass(categoryName,categoryId);
                     }
                 } else {
@@ -120,8 +121,8 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
                     holder.categoryTv.setTextColor(0xFFFFFFFF); // Set the selected text color
 
                     // Pass the category id and category name to another class
-                    String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getId();
-                    String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory();
+                    String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getCategory_id();
+                    String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory_name();
                     passCategoryNameToOtherClass(categoryName, categoryId);
                     Toast.makeText(v.getContext(),"Notes category chosen",Toast.LENGTH_SHORT).show();
                 }
@@ -155,14 +156,14 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
 //        });
     }
 
-    private void passCategoryNameToOtherClass(String categoryName, String categoryId) {
+    private void passCategoryNameToOtherClass(String category_name, String category_id) {
         //You can use Intent to pass data to another class/activity
         Intent intent = new Intent(context, user_uploadNotes.class);
 //        intent.putExtra("NOTE_TITLE",title);
 //        intent.putExtra("NOTE_DESCRIPTION",description);
 //        intent.putExtra("PDF_URL",pdfUri);
-        intent.putExtra("CATEGORY_NAME",categoryName);
-        intent.putExtra("CATEGORY_ID",categoryId);
+        intent.putExtra("CATEGORY_NAME",category_name);
+        intent.putExtra("CATEGORY_ID",category_id);
         context.startActivity(intent);
     }
 
