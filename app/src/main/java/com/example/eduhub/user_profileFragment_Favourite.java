@@ -1,64 +1,105 @@
 package com.example.eduhub;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link user_profileFragment_Favourite#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.eduhub.adapter.user_AdapterNote;
+import com.example.eduhub.databinding.FragmentUserProfileFavouriteBinding;
+import com.example.eduhub.model.Notes;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class user_profileFragment_Favourite extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firestore;
+    private FragmentUserProfileFavouriteBinding binding;
+    private RecyclerView recyclerViewNote;
+    private user_AdapterNote noteAdapter;
+    private List<Notes> noteList;
 
     public user_profileFragment_Favourite() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment user_profileFragment_Videos.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static user_profileFragment_Favourite newInstance(String param1, String param2) {
-        user_profileFragment_Favourite fragment = new user_profileFragment_Favourite();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentUserProfileFavouriteBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+
+        // Initialize Firebase instances
+        firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
+        recyclerViewNote = binding.favouriteNotes;
+        recyclerViewNote.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false));
+        noteList = new ArrayList<>();
+        noteAdapter = new user_AdapterNote(getContext(), noteList);
+        recyclerViewNote.setAdapter(noteAdapter);
+
+        // Fetch and display favorite notes
+        fetchFavoriteNotes();
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private void fetchFavoriteNotes() {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        String userId = user.getUid();
+
+        if (user != null) {
+            // Fetch the list of favorite note references
+            firestore.collection("user").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            List<DocumentReference> favoriteNotesRefs = (List<DocumentReference>) documentSnapshot.get("favourite_notes");
+
+                            // Iterate through the favorite note references
+                            if (favoriteNotesRefs != null){
+                                for (DocumentReference favoriteNoteRef : favoriteNotesRefs) {
+                                    favoriteNoteRef.get().addOnSuccessListener(documentSnapshot1 -> {
+                                        if (documentSnapshot1.exists()) {
+                                            // Get the note data and create a Note object
+                                            String notesId = documentSnapshot1.getId();
+                                            String categoryId = Objects.requireNonNull(documentSnapshot1.getDocumentReference("category_id")).getId();
+                                            String description = documentSnapshot1.getString("resource_description");
+                                            String fileUrl = documentSnapshot1.getString("resource_file");
+                                            int likes = documentSnapshot1.getLong("resource_likes").intValue();
+                                            String resourceName = documentSnapshot1.getString("resource_name");
+                                            Timestamp timestamp = documentSnapshot1.getTimestamp("resource_upload_datetime");
+
+                                            // Create a Note object
+                                            Notes note = new Notes(notesId, categoryId, description, fileUrl, likes, resourceName, timestamp, userId);
+
+                                            // Add the Note to the list
+                                            noteList.add(note);
+                                        }
+
+                                        // Notify the adapter of the data change
+                                        noteAdapter.notifyDataSetChanged();
+
+                                    }).addOnFailureListener(e -> {
+                                        // Handle the failure to fetch the list of favorite note references
+                                    });
+                                }
+                            }
+                        }
+                    }).addOnFailureListener(e -> {
+                        // Handle the failure to fetch the list of favorite note references
+                    });
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_profile__favourite, container, false);
     }
 }

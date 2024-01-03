@@ -36,9 +36,12 @@ public class MyApplication extends Application {
         return date;
     }
     public static final String formatTimestamp (Timestamp timestamp){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.ENGLISH); // Define your desired date format
-        String formattedDate = sdf.format(timestamp.toDate());
-        return formattedDate;
+        if (timestamp != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.ENGLISH); // Define your desired date format
+            String formattedDate = sdf.format(timestamp.toDate());
+            return formattedDate;
+        }
+        return null;
     }
     public static void addToFavouriteNote (Context context, String noteId){
         //we can add only if user is logged in

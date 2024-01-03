@@ -45,7 +45,8 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
     private user_AdapterHomeFragmentCategory categoryAdapter;
     private List<Category> categoryList;
 
-    private ArrayList<Notes> noteList, FilteredNoteList, AllList;
+    private ArrayList<Notes> noteList;
+    private ArrayList<Notes> FilteredNoteList;
     private user_AdapterNote noteAdapter;
     private ImageButton selectAllCategoryBtn;
 
