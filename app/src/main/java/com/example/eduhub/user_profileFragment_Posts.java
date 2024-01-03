@@ -1,64 +1,100 @@
 package com.example.eduhub;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link user_profileFragment_Posts#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.eduhub.adapter.user_AdapterNote;
+import com.example.eduhub.databinding.FragmentUserProfileFavouriteBinding;
+import com.example.eduhub.databinding.FragmentUserProfilePostsBinding;
+import com.example.eduhub.model.Notes;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 public class user_profileFragment_Posts extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firestore;
+    private FragmentUserProfilePostsBinding binding;
+    private RecyclerView recyclerViewNote;
+    private user_AdapterNote noteAdapter;
+    private List<Notes> noteList;
 
     public user_profileFragment_Posts() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment user_profileFragment_Notes.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static user_profileFragment_Posts newInstance(String param1, String param2) {
-        user_profileFragment_Posts fragment = new user_profileFragment_Posts();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentUserProfilePostsBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+
+        // Initialize Firebase instances
+        firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
+        recyclerViewNote = binding.postsNotes;
+        recyclerViewNote.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false));
+        noteList = new ArrayList<>();
+        noteAdapter = new user_AdapterNote(getContext(), noteList);
+        recyclerViewNote.setAdapter(noteAdapter);
+
+        // Fetch and display favorite notes
+        fetchPostsNotes();
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private void fetchPostsNotes() {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        String userId = user.getUid();
+        DocumentReference userRef = firestore.collection("user").document(userId);
+
+        if (user != null) {
+            // Create a reference to the "resource" collection
+            CollectionReference resourceRef = firestore.collection("resource");
+
+            // Query the "resource" collection where "user_id" matches the user's ID
+            resourceRef.whereEqualTo("user_id", userRef).get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            if (documentSnapshot.exists()) {
+                                String notesId = documentSnapshot.getId();
+                                String categoryId = Objects.requireNonNull(documentSnapshot.getDocumentReference("category_id")).getId();
+                                String description = documentSnapshot.getString("resource_description");
+                                String fileUrl = documentSnapshot.getString("resource_file");
+                                int likes = documentSnapshot.getLong("resource_likes").intValue();
+                                String resourceName = documentSnapshot.getString("resource_name");
+                                Timestamp timestamp = documentSnapshot.getTimestamp("resource_upload_datetime");
+
+                                // Create a Note object
+                                Notes note = new Notes(notesId, categoryId, description, fileUrl, likes, resourceName, timestamp, userId);
+
+                                // Add the Note to the list
+                                noteList.add(note);
+                            }
+                        }
+
+                        // Notify the adapter of the data change
+                        noteAdapter.notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle the failure to fetch the list of resource documents
+                    });
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_profile__posts, container, false);
-    }
 }

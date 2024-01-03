@@ -3,11 +3,6 @@ package com.example.eduhub.model;
 import com.google.firebase.Timestamp;
 
 public class Notes {
-    //variables
-//    String uid, author_uid, id, title, description, category, categoryId, url;
-//    long timestamp;
-//    int likes;
-
     String notes_id;
     String category_id;
     String resource_description;
@@ -18,7 +13,6 @@ public class Notes {
     String resource_name;
     Timestamp resource_upload_datetime;
     String user_id;
-    boolean isLiked, isFavourite;
 
     //constructor
     public Notes() {

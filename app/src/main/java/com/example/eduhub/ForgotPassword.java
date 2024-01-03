@@ -1,5 +1,6 @@
 package com.example.eduhub;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -13,11 +14,15 @@ import com.example.eduhub.databinding.ActivityForgotPasswordBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class ForgotPassword extends AppCompatActivity {
 
     private ActivityForgotPasswordBinding binding;
     private FirebaseAuth firebaseAuth;
+    private ProgressDialog progressDialog;
     private String email="";
 
     @Override
@@ -66,21 +71,47 @@ public class ForgotPassword extends AppCompatActivity {
     }
 
     private void resetPassword() {
-        // Send a password reset email
-        firebaseAuth.sendPasswordResetEmail(email)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        // Check if the email exists in Firestore "user" collection
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersRef = db.collection("user");
+
+        usersRef.whereEqualTo("user_email", email)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        // Email sent successfully
-                        Toast.makeText(ForgotPassword.this, "A reset email has been sent.", Toast.LENGTH_SHORT).show();
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            // Email exists in Firestore
+                            // Send a password reset email
+                            firebaseAuth.sendPasswordResetEmail(email)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            // Email sent successfully
+                                            Toast.makeText(ForgotPassword.this, "A reset email has been sent.", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            // Email sending failed
+                                            Toast.makeText(ForgotPassword.this, String.format("%s", e.getMessage()), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            // Email does not exist in Firestore
+                            Toast.makeText(ForgotPassword.this, "Email is not registered.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(Exception e) {
-                        // Email sending failed
-                        Toast.makeText(ForgotPassword.this, String.format("%s", e.getMessage()), Toast.LENGTH_SHORT).show();
+                        // Firestore query failed
+                        Toast.makeText(ForgotPassword.this, "Firestore query failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }
