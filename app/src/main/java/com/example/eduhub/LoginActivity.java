@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
 
     //progress dialog
     private ProgressDialog progressDialog;
+
+    private String email="", password="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,16 @@ public class LoginActivity extends AppCompatActivity {
                 onBackButtonClicked();
             }
         });
+
+        TextView forgotPasswordTv = findViewById(R.id.forgotTv);
+        //Set an OnClickListener to handle the forgot password click
+        forgotPasswordTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, ForgotPassword.class);
+                startActivity(i);
+            }
+        });
     }
 
     private void onBackButtonClicked() {
@@ -78,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private String email="", password="";
     private void validateData() {
         /*Before log in, lets do some data validation*/
 
