@@ -92,7 +92,7 @@ public class user_notesDetails extends AppCompatActivity {
         commentRv.setAdapter(adapterComment);
         loadComments(noteId);
         
-        Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
 
         //init progress dialog
         progressDialog = new ProgressDialog(this);
@@ -349,7 +349,7 @@ public class user_notesDetails extends AppCompatActivity {
                 });
     }
 
-    //load comments (bug)
+    //load comments
     @SuppressLint("NotifyDataSetChanged")
     private void loadComments(String noteId) {
         // Initialize the ArrayList before adding data into it
