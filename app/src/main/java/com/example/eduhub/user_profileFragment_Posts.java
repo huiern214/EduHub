@@ -31,7 +31,7 @@ public class user_profileFragment_Posts extends Fragment {
     private FragmentUserProfilePostsBinding binding;
     private RecyclerView recyclerViewNote;
     private user_AdapterNote noteAdapter;
-    private List<Notes> noteList;
+    private ArrayList<Notes> noteList;
 
     public user_profileFragment_Posts() {
         // Required empty public constructor

@@ -29,7 +29,7 @@ public class user_profileFragment_Like extends Fragment {
     private FragmentUserProfileLikeBinding binding;
     private RecyclerView recyclerViewNote;
     private user_AdapterNote noteAdapter;
-    private List<Notes> noteList;
+    private ArrayList<Notes> noteList;
 
     public user_profileFragment_Like() {
         // Required empty public constructor

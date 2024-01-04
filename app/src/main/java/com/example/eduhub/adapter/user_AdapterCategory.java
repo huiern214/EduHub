@@ -33,8 +33,6 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
     private user_filterCategory filter;
     //declare a variable to store the selected position
     private int selectedCategoryPosition = RecyclerView.NO_POSITION;
-    String title,description;
-    Uri pdfUri;
 
 
     public user_AdapterCategory (Context context, ArrayList<Category> categoryArrayList){

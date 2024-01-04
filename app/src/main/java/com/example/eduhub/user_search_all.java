@@ -3,62 +3,113 @@ package com.example.eduhub;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link user_search_all#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.eduhub.adapter.user_AdapterNote;
+import com.example.eduhub.databinding.FragmentUserSearchAllBinding;
+import com.example.eduhub.model.Notes;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class user_search_all extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public user_search_all() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment user_search_all.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static user_search_all newInstance(String param1, String param2) {
-        user_search_all fragment = new user_search_all();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private FragmentUserSearchAllBinding binding;
+    private RecyclerView searchNotesRv, searchShortsRv;
+    private ArrayList<Notes> noteList;
+    private user_AdapterNote noteAdapter;
+    EditText searchEt;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_search_all, container, false);
+        binding = FragmentUserSearchAllBinding.inflate(inflater,container,false);
+        View view = binding.getRoot();
+
+        // Initialize recycler view and note adapter
+        searchNotesRv = binding.searchNotesRv;
+        searchNotesRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        noteList = new ArrayList<>();
+        noteAdapter = new user_AdapterNote(getContext(), noteList);
+        searchNotesRv.setAdapter(noteAdapter);
+        searchEt = binding.searchEt;
+
+        // Load Notes
+        loadNotes();
+
+        // Edit text change listener, search
+        searchEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try{
+                    //Assuming you have an instance of user_AdapterNote named adapterNote
+                    noteAdapter.getFilter().filter(s);
+                } catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        return view;
+    }
+
+    private void loadNotes() {
+        // Initialize ArrayList
+        noteList = new ArrayList<>();
+
+        //Get reference to the "Resource" collection in Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference notesRef = db.collection("resource");
+
+        notesRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                //Clear ArrayList before adding data into it
+                noteList.clear();
+
+                for (QueryDocumentSnapshot document : task.getResult()){
+                    //Get data
+                    long resource_likes_long = document.getLong("resource_likes");
+                    int resource_likes = (int) resource_likes_long;
+                    Notes note = new Notes(document.getId(),
+                            Objects.requireNonNull(document.getDocumentReference("category_id")).getId(),
+                            document.getString("resource_description"),
+                            document.getString("resource_file"), resource_likes,
+                            document.getString("resource_name"),
+                            document.getTimestamp("resource_upload_datetime"),
+                            Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
+//                            Notes note = document.toObject(Notes.class);
+                    noteList.add(note);
+                }
+                //Setup adapter
+                noteAdapter = new user_AdapterNote(getContext(),noteList);
+                //Set adapter to recycler view
+                binding.searchNotesRv.setAdapter(noteAdapter);
+            }else{
+                //handle errors here
+                Log.w("Error loading notes",task.getException());
+            }
+        });
     }
 }
