@@ -32,6 +32,8 @@ public class ForgotPassword extends AppCompatActivity {
         binding = ActivityForgotPasswordBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        progressDialog = new ProgressDialog(this);
+
         //init firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -48,7 +50,6 @@ public class ForgotPassword extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ForgotPassword.this, LoginActivity.class));
                 finish();
             }
         });

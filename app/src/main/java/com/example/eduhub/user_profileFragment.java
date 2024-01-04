@@ -10,17 +10,22 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class user_profileFragment extends Fragment {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firestore;
     private TextView usernameTextView, emailTextView, accountTextView, joinedTextView, postsTextView;
+    private ShapeableImageView profilePicIv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,6 +41,7 @@ public class user_profileFragment extends Fragment {
         accountTextView = view.findViewById(R.id.accountTextView);
         joinedTextView = view.findViewById(R.id.joinedTextView);
         postsTextView = view.findViewById(R.id.postsTextView);
+        profilePicIv = view.findViewById(R.id.profile_pic);
 
         // Load user profile data
         loadUserProfile();
@@ -44,6 +50,8 @@ public class user_profileFragment extends Fragment {
         Button btnFragmentPosts = view.findViewById(R.id.btnFragmentPosts);
         Button btnFragmentFavourite = view.findViewById(R.id.btnFragmentFavourite);
         Button btnFragmentLikes = view.findViewById(R.id.btnFragmentLike);
+
+        loadFragment(new user_profileFragment_Posts());
 
         btnFragmentPosts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +98,7 @@ public class user_profileFragment extends Fragment {
                     String email = documentSnapshot.getString("user_email");
                     String userType = documentSnapshot.getString("user_type");
                     long creationTime = user.getMetadata().getCreationTimestamp();
+                    String profileImageUrl = documentSnapshot.getString("user_photo");
 
                     // Set username and email
                     usernameTextView.setText(username);
@@ -107,6 +116,36 @@ public class user_profileFragment extends Fragment {
 
                     // Count user's posts
                     countUserPosts(user.getUid());
+
+                    if (profileImageUrl != null && (profileImageUrl.startsWith("http://") || profileImageUrl.startsWith("https://"))) {
+                        // HTTP/HTTPS URL: Use Glide to load the image from the web
+                        Glide.with(profilePicIv.getContext())
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.baseline_person_2_24)
+                                .error(R.drawable.baseline_person_2_24)
+                                .into(profilePicIv);
+                    } else if (profileImageUrl != null && profileImageUrl.startsWith("gs://")) {
+                        // GS URL: Use Firebase Storage to load the image
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profileImageUrl);
+
+                        // Get the download URL for the file
+                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String profileImgUrl = uri.toString();
+
+                            // Load the image using Glide
+                            Glide.with(this)
+                                    .load(profileImgUrl)
+                                    .placeholder(R.drawable.baseline_person_2_24)
+                                    .error(R.drawable.baseline_person_2_24)
+                                    .into(profilePicIv);
+                        }).addOnFailureListener(e -> {
+                            // Handle the failure to get the download URL
+                            profilePicIv.setImageResource(R.drawable.baseline_person_2_24);
+                        });
+                    } else {
+                        // Handle unsupported URL format or null URL
+                        profilePicIv.setImageResource(R.drawable.baseline_person_2_24);
+                    }
                 }
             });
         }
