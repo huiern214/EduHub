@@ -18,11 +18,16 @@
                 android:elevation="100dp"
                 android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/user_pic"
+                android:background="@drawable/baseline_person_2_24"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/styleCircleImage"
+                app:strokeColor="@color/dark_grey"
+                app:strokeWidth="1dp"
                 android:contentDescription="profile picture" />
         </LinearLayout>
 

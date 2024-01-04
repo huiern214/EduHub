@@ -88,7 +88,6 @@ public class user_AdapterComment extends RecyclerView.Adapter<user_AdapterCommen
 
                 // Set data
                 holder.nameTv.setText(name);
-                Log.d(TAG, "nameee" + profileImg);
 
                 if (profileImg != null && (profileImg.startsWith("http://") || profileImg.startsWith("https://"))) {
                     // HTTP/HTTPS URL: Use Glide to load the image from the web
@@ -104,8 +103,6 @@ public class user_AdapterComment extends RecyclerView.Adapter<user_AdapterCommen
                     // Get the download URL for the file
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String profileImgUrl = uri.toString();
-
-                        Log.d(TAG, "loadUserDetails: " + profileImgUrl);
 
                         // Load the image using Glide
                         Glide.with(context)

@@ -130,7 +130,8 @@ public class user_notesDetails extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(user_notesDetails.this, user_DashboardActivity.class));
+                // startActivity(new Intent(user_notesDetails.this, user_DashboardActivity.class));
+                finish();
             }
         });
         // backBtn.setOnClickListener(v -> startActivity(new Intent(user_notesDetails.this, user_HomeFragment.class)));

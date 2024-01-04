@@ -1,19 +1,19 @@
 package com.example.eduhub;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.example.eduhub.MainActivity;
 import com.example.eduhub.databinding.ActivityDashboardBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -33,10 +33,9 @@ public class user_DashboardActivity extends AppCompatActivity {
     user_shortsFragment shortsFragment = new user_shortsFragment();
     user_calendarFragment calendarFragment = new user_calendarFragment();
     user_profileFragment profileFragment = new user_profileFragment();
-    Toolbar toolbar;
 
     //Upload Materials
-    Dialog uploadDialog, settingDialog;
+    Dialog uploadDialog;
     Button uploadNote,uploadVideo;
     Button settingBtn;
 
@@ -59,29 +58,17 @@ public class user_DashboardActivity extends AppCompatActivity {
         uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
         uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        //Setting dialog
-//        settingDialog = new Dialog(this);
-//        settingDialog.setContentView(R.layout.dialog_settings);
-//        settingBtn = binding.toolbar.findViewById(R.id.setting);
-//        settingBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                settingDialog.setContentView(R.layout.dialog_settings);
-//                settingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//
-//                Button privacy = settingDialog.findViewById(R.id.privacyBtn);
-//                Button editProfile = settingDialog.findViewById(R.id.editProfileBtn);
-//                Button logOut = settingDialog.findViewById(R.id.logoutBtn);
-//
-//                logOut.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        firebaseAuth.signOut();
-//                        checkUser();
-//                    }
-//                });
-//            }
-//        });
+        // Find the "Setting" menu item from the toolbar
+        MenuItem settingMenuItem = binding.toolbar.getMenu().findItem(R.id.setting);
+
+        // Set an onClickListener to show the popup menu when the item is clicked
+        settingMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showSettingPopupMenu(binding.toolbar); // Pass the toolbar as the anchor view
+                return true;
+            }
+        });
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, homeFragment).commit();
@@ -141,41 +128,32 @@ public class user_DashboardActivity extends AppCompatActivity {
             //not logged in, go to main screen
             startActivity(new Intent(this, MainActivity.class));
             finish();
-        } else{
-            //logged in, get user info
-            String email = firebaseUser.getEmail();
-            //binding.subTitleTv.setText(email);
         }
     }
+
+    private void showSettingPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.END);
+        popupMenu.getMenuInflater().inflate(R.menu.setting_user, popupMenu.getMenu());
+
+        // Set an item click listener for the popup menu
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // Handle item clicks here
+                if (item.getItemId() == R.id.privacy) {
+                    // Handle Privacy item click
+                } else if (item.getItemId() == R.id.edit_profile) {
+                    // Handle Edit Profile item click
+                    startActivity(new Intent(user_DashboardActivity.this, EditProfile.class));
+                } else if (item.getItemId() == R.id.logout) {
+                    // Handle Log Out item click
+                    firebaseAuth.signOut();
+                    checkUser();
+                }
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
 }
-
-        //handle click, logout
-//        binding.logoutBtn.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                firebaseAuth.signOut();
-//                checkUser();
-//            }
-//        });
-
-
-//    private void showPopupMenu(View view) {
-//        PopupMenu popupMenu = new PopupMenu(this,view);
-//        popupMenu.inflate(R.menu.setting_user);
-//        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                if (item.getItemId()==R.id.privacy){
-//                    return true;
-//                } else if (item.getItemId()==R.id.edit_profile) {
-//                    return true;
-//                } else if (item.getItemId()==R.id.logout) {
-////                    firebaseAuth.signOut();
-////                    checkUser();
-//                    return true;
-//                }
-//                return true;
-//            }
-//        });
-//    }
-
