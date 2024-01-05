@@ -139,6 +139,16 @@ public class MyApplication extends Application {
                 .addOnFailureListener(e -> {
                     Toast.makeText(context, "Failed to add to like due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+
+        // Count for resource_likes
+        noteRef.update("resource_likes", FieldValue.increment(1))
+                .addOnSuccessListener(aVoid -> {
+//                    Toast.makeText(context, "Added to your like list", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+//                    Toast.makeText(context, "Failed to add to like due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
     }
 
     // Unlike function
@@ -172,6 +182,15 @@ public class MyApplication extends Application {
             .addOnFailureListener(e -> {
                 Toast.makeText(context, "Failed to remove from like due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
+
+        // Count for resource_likes
+        noteRef.update("resource_likes", FieldValue.increment(-1))
+                .addOnSuccessListener(aVoid -> {
+//                    Toast.makeText(context, "Added to your like list", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+//                    Toast.makeText(context, "Failed to add to like due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
 }

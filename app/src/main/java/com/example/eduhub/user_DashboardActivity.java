@@ -1,5 +1,6 @@
 package com.example.eduhub;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
@@ -14,11 +15,11 @@ import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.example.eduhub.databinding.ActivityDashboardBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.eduhub.databinding.ActivityDashboardBinding;
 
 public class user_DashboardActivity extends AppCompatActivity {
     //view binding
@@ -60,12 +61,22 @@ public class user_DashboardActivity extends AppCompatActivity {
 
         // Find the "Setting" menu item from the toolbar
         MenuItem settingMenuItem = binding.toolbar.getMenu().findItem(R.id.setting);
+        MenuItem searchMenuItem = binding.toolbar.getMenu().findItem(R.id.search);
 
         // Set an onClickListener to show the popup menu when the item is clicked
         settingMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 showSettingPopupMenu(binding.toolbar); // Pass the toolbar as the anchor view
+                return true;
+            }
+        });
+
+        //Set an onClickListener to pass to search Activity
+        searchMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem item) {
+                startActivity(new Intent(user_DashboardActivity.this, user_search.class));
                 return true;
             }
         });

@@ -41,7 +41,7 @@ public class user_uploadNotes extends AppCompatActivity {
 
     ImageButton uploadDocumentBtn;
     AppCompatButton chooseCategoryBtn;
-    String categoryName,categortId;
+    String categoryName, categortId, actionType;
     TextView pdfName;
     EditText titleNote, descriptionNote;
     private String title = "", description = "", category = "", id="";
@@ -128,6 +128,7 @@ public class user_uploadNotes extends AppCompatActivity {
                 String description = binding.descriptionEt.getText().toString();
                 intent.putExtra("DESCRIPTION", description);
                 intent.putExtra("PDF",pdfUri);
+                intent.putExtra("ACTION_TYPE", "upload");
 
                 // Start the next activity
                 startActivity(intent);
