@@ -29,7 +29,7 @@ public class user_profileFragment_Favourite extends Fragment {
     private FragmentUserProfileFavouriteBinding binding;
     private RecyclerView recyclerViewNote;
     private user_AdapterNote noteAdapter;
-    private List<Notes> noteList;
+    private ArrayList<Notes> noteList;
 
     public user_profileFragment_Favourite() {
         // Required empty public constructor

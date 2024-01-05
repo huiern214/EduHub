@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.eduhub.MyApplication;
 import com.example.eduhub.R;
 import com.example.eduhub.model.Notes;
+import com.example.eduhub.user_filterNote;
 import com.example.eduhub.user_notesDetails;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
@@ -35,25 +37,28 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.ViewHolder> {
     private final Context context;
-    private List<Notes> noteList;
+    public ArrayList<Notes> noteList, filterList;
     private static final String TAG = "PDF_ADAPTER_TAG";
     private FirebaseAuth firebaseAuth;
     boolean isInMyFavourite = false, isInMyLike = false;
     String noteId;
+    private user_filterNote filter;
 
-    public user_AdapterNote(Context context, List<Notes> noteList) {
+    public user_AdapterNote(Context context, ArrayList<Notes> noteList) {
         this.context = context;
         this.noteList = noteList;
+        this.filterList = noteList;
         this.firebaseAuth = FirebaseAuth.getInstance();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setNoteList(List<Notes> noteList) {
+    public void setNoteList(ArrayList<Notes> noteList) {
         this.noteList = noteList;
     }
 
@@ -311,6 +316,13 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
     @Override
     public int getItemCount() {
         return noteList.size();
+    }
+
+    public Filter getFilter(){
+        if (filter == null){
+            filter = new user_filterNote(filterList,this);
+        }
+        return filter;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
