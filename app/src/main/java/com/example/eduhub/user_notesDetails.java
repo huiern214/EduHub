@@ -38,6 +38,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -54,11 +55,11 @@ public class user_notesDetails extends AppCompatActivity {
     private ActivityUserNotesDetailsBinding binding;
     private static final String TAG_DOWNLOAD = "DOWNLOAD_TAG";
     private static final int SAF_REQUEST_CODE = 0;
-    private String title, description, authorName, dateUploaded, categoryName, authorID, url, noteId;
+    private String title, description, authorName, dateUploaded, categoryName, authorID, url, noteId, matchAuthorId;
     private Timestamp timestamp;
             TextView noteTitle, noteDescription, noteCategory, noteDate, author,sizeTv, numberOfViews, numberOfDownloads, numberOfLikes;
             PDFView noteImg;
-            ImageButton backBtn, downloadBtn, addCommentBtn, shareBtn, reportBtn;
+            ImageButton backBtn, downloadBtn, addCommentBtn, shareBtn, reportBtn, editBtn;
             ToggleButton likeBtn, favouriteBtn;
             Button readBtn;
             boolean isInMyFavourite=false;
@@ -79,6 +80,7 @@ public class user_notesDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding =ActivityUserNotesDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        firebaseAuth = FirebaseAuth.getInstance();
 
         //Retrieve the noteID from the intent
         noteId = getIntent().getStringExtra("noteId");
@@ -261,7 +263,6 @@ public class user_notesDetails extends AppCompatActivity {
                 startActivity(Intent.createChooser(intent,"Share to: "));
             }
         });
-
         progressDialog = new ProgressDialog(this);
         addReportDialog = new Dialog(this);
         addReportDialog.setContentView(R.layout.dialog_report);
@@ -519,7 +520,6 @@ public class user_notesDetails extends AppCompatActivity {
         }
     }
 
-
     //request storage permission
     private void loadNoteDetails(String noteId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -681,5 +681,4 @@ public class user_notesDetails extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> Log.e("Note details", "Error checking like: " + e.getMessage()));
     }
-
 }

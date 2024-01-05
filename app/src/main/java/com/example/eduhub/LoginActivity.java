@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                     } else if ("admin".equals(userType)) {
                         // This is an admin, open the admin dashboard
-                        startActivity(new Intent(LoginActivity.this, DashboardAdminActivity.class));
+                        startActivity(new Intent(LoginActivity.this, admin_DashboardAdminActivity.class));
                         finish();
                     }
                 } else {
