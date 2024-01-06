@@ -84,6 +84,7 @@ public class user_notesDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding =ActivityUserNotesDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        firebaseAuth = FirebaseAuth.getInstance();
 
         //init progress dialog
         progressDialog = new ProgressDialog(this);
@@ -263,6 +264,7 @@ public class user_notesDetails extends AppCompatActivity {
             }
         });
 
+        //handle notes deletion
         deleteNotesDialog = new Dialog(this);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,6 +273,8 @@ public class user_notesDetails extends AppCompatActivity {
                 deleteNotesDialog();
             }
         });
+      
+        //handle notes edit
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -282,6 +286,7 @@ public class user_notesDetails extends AppCompatActivity {
             }
         });
 
+        //report notes
         addReportDialog = new Dialog(this);
         //handle click, start report add screen
         reportBtn.setOnClickListener(new View.OnClickListener() {
@@ -845,5 +850,4 @@ public class user_notesDetails extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> Log.e("Note details", "Error checking like: " + e.getMessage()));
     }
-
 }

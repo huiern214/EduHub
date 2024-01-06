@@ -20,6 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".admin_report_details"
+            android:exported="false" />
+        <activity
+            android:name=".admin_reports"
+            android:exported="false" />
+        <activity
             android:name=".user_edit_notes"
             android:exported="false" />
         <activity
@@ -44,7 +50,7 @@
             android:name=".user_CategoryAdd"
             android:exported="false" />
         <activity
-            android:name=".DashboardAdminActivity"
+            android:name=".admin_DashboardAdminActivity"
             android:exported="false"
             android:theme="@style/Theme.EduHub" />
         <activity
