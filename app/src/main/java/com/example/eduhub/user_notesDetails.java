@@ -38,7 +38,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -109,9 +108,9 @@ public class user_notesDetails extends AppCompatActivity {
 
         noteTitle = findViewById(R.id.titleTv);
         noteDescription = findViewById(R.id.noteDescription);
-        noteCategory = findViewById(R.id.categoryName);
+        noteCategory = findViewById(R.id.categoryNameTv);
         noteDate = findViewById(R.id.date);
-        author = findViewById(R.id.authorName);
+        author = findViewById(R.id.authorNameTv);
         sizeTv = findViewById(R.id.size);
         noteImg = findViewById(R.id.pdfView);
         numberOfDownloads = findViewById(R.id.numberOfDownloads);
