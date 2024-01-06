@@ -2,6 +2,7 @@ package com.example.eduhub;
 
 import static com.example.eduhub.Constants.MAX_BYTES_PDF;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,13 +33,17 @@ import com.example.eduhub.databinding.ActivityUserNotesDetailsBinding;
 
 import com.example.eduhub.model.Comment;
 import com.github.barteksc.pdfviewer.PDFView;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -53,17 +58,16 @@ import java.util.Objects;
 
 public class user_notesDetails extends AppCompatActivity {
     private ActivityUserNotesDetailsBinding binding;
-    private static final String TAG_DOWNLOAD = "DOWNLOAD_TAG";
-    private static final int SAF_REQUEST_CODE = 0;
-    private String title, description, authorName, dateUploaded, categoryName, authorID, url, noteId, matchAuthorId;
+    private String title, description, authorName, categoryName, categoryId, authorID, url, noteId;
     private Timestamp timestamp;
             TextView noteTitle, noteDescription, noteCategory, noteDate, author,sizeTv, numberOfViews, numberOfDownloads, numberOfLikes;
             PDFView noteImg;
-            ImageButton backBtn, downloadBtn, addCommentBtn, shareBtn, reportBtn, editBtn;
+            ImageButton backBtn, downloadBtn, addCommentBtn, shareBtn, reportBtn, deleteBtn, editBtn;
             ToggleButton likeBtn, favouriteBtn;
             Button readBtn;
             boolean isInMyFavourite=false;
             boolean isInMyLike=false;
+            boolean userCanDeleteEditNote;
     private FirebaseAuth firebaseAuth;
     //private dialog
     private ProgressDialog progressDialog;
@@ -72,7 +76,7 @@ public class user_notesDetails extends AppCompatActivity {
     //adapter to set recyclerview
     private user_AdapterComment adapterComment;
     RecyclerView commentRv;
-    Dialog addCommentDialog, addReportDialog;
+    Dialog addCommentDialog, addReportDialog, deleteNotesDialog;
     TextView commentTv, reportNoteTv;
 
     @Override
@@ -81,20 +85,6 @@ public class user_notesDetails extends AppCompatActivity {
         binding =ActivityUserNotesDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         firebaseAuth = FirebaseAuth.getInstance();
-
-        //Retrieve the noteID from the intent
-        noteId = getIntent().getStringExtra("noteId");
-        loadNoteDetails(noteId);
-
-        //Load comments from database
-        commentRv = findViewById(R.id.commentsRV);
-        commentRv.setLayoutManager(new LinearLayoutManager(this));
-        commentArrayList = new ArrayList<>();
-        adapterComment = new user_AdapterComment(this,commentArrayList);
-        commentRv.setAdapter(adapterComment);
-        loadComments(noteId);
-        
-        // Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
 
         //init progress dialog
         progressDialog = new ProgressDialog(this);
@@ -127,6 +117,22 @@ public class user_notesDetails extends AppCompatActivity {
         shareBtn = findViewById(R.id.shareBtn);
         reportBtn = findViewById(R.id.reportNote);
         reportNoteTv = findViewById(R.id.reportNoteEt);
+        deleteBtn = findViewById(R.id.deleteNoteBtn);
+        editBtn = findViewById(R.id.editNoteBtn);
+
+        //Retrieve the noteID from the intent
+        noteId = getIntent().getStringExtra("noteId");
+        loadNoteDetails(noteId);
+
+        //Load comments from database
+        commentRv = findViewById(R.id.commentsRV);
+        commentRv.setLayoutManager(new LinearLayoutManager(this));
+        commentArrayList = new ArrayList<>();
+        adapterComment = new user_AdapterComment(this,commentArrayList);
+        commentRv.setAdapter(adapterComment);
+        loadComments(noteId);
+
+        // Toast.makeText(this, "noteID: " + noteId, Toast.LENGTH_SHORT).show();
 
         //handle click, go back
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -232,12 +238,6 @@ public class user_notesDetails extends AppCompatActivity {
         //pop up dialog handle
         progressDialog = new ProgressDialog(this);
         addCommentDialog = new Dialog(this);
-        //Inflate the dialog layout
-        addCommentDialog.setContentView(R.layout.dialog_add_comment);
-        //Find views from the addCommentDialog
-        ImageButton closeBtn = addCommentDialog.findViewById(R.id.closeBtn);
-        Button submitCommentBtn = addCommentDialog.findViewById(R.id.submitCommentBtn);
-        addCommentDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //handle click, start comment add screen
         addCommentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,10 +263,31 @@ public class user_notesDetails extends AppCompatActivity {
                 startActivity(Intent.createChooser(intent,"Share to: "));
             }
         });
-        progressDialog = new ProgressDialog(this);
+
+        //handle notes deletion
+        deleteNotesDialog = new Dialog(this);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Requirements: User must be logged in to add comment */
+                deleteNotesDialog();
+            }
+        });
+      
+        //handle notes edit
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Pass the document ID to the next activity
+                Intent intent = new Intent(user_notesDetails.this, user_edit_notes.class);
+                intent.putExtra("noteId", noteId); // Pass the document ID
+                intent.putExtra("CATEGORY_ID",categoryId);
+                startActivity(intent);
+            }
+        });
+
+        //report notes
         addReportDialog = new Dialog(this);
-        addReportDialog.setContentView(R.layout.dialog_report);
-        addReportDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //handle click, start report add screen
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -276,6 +297,144 @@ public class user_notesDetails extends AppCompatActivity {
         });
     }
 
+    // Delete Notes
+    private void deleteNotesDialog(){
+        deleteNotesDialog.setContentView(R.layout.dialog_delete_notes);
+        deleteNotesDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        //Find views from the addCommentDialog
+        ImageButton closeDeleteNotesBtn = deleteNotesDialog.findViewById(R.id.closeDeleteNotesBtn);
+        Button submitDeleteNotesBtn = deleteNotesDialog.findViewById(R.id.submitDeleteNotesBtn);
+
+        closeDeleteNotesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteNotesDialog.dismiss();
+            }
+        });
+
+        submitDeleteNotesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteNote();
+                removeReferenceFromUserLikes();
+                removeReferenceFromUserFavourite();
+                deleteNotesDialog.dismiss();
+                finish();
+            }
+        });
+
+
+        // Show the dialog
+        deleteNotesDialog.show();
+    }
+
+    private void deleteNote() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Reference to the note document in the "resource" collection
+        DocumentReference noteRef = firestore.collection("resource").document(noteId);
+
+        // Delete the document
+        noteRef.delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Successfully deleted the note
+                        // You can perform any additional actions here if needed
+                        Toast.makeText(getApplicationContext(), "Note deleted successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while deleting the note
+                        Toast.makeText(getApplicationContext(), "Failed to delete note: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void removeReferenceFromUserLikes() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Query the "user" collection to find documents with references to the note
+        firestore.collection("user")
+                .whereArrayContains("like_notes", firestore.collection("resource").document(noteId))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Get the user document
+                            DocumentReference userRef = firestore.collection("user").document(document.getId());
+
+                            // Remove the reference from the "like_notes" field
+                            userRef.update("like_notes", FieldValue.arrayRemove(firestore.collection("resource").document(noteId)))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Successfully removed the reference from the user's "like_notes"
+                                            // You can perform any additional actions here if needed
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle any errors that occurred while updating the "like_notes" field
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while querying the "user" collection
+                    }
+                });
+    }
+
+    private void removeReferenceFromUserFavourite() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Query the "user" collection to find documents with references to the note
+        firestore.collection("user")
+                .whereArrayContains("favourite_notes", firestore.collection("resource").document(noteId))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Get the user document
+                            DocumentReference userRef = firestore.collection("user").document(document.getId());
+
+                            // Remove the reference from the "like_notes" field
+                            userRef.update("favourite_notes", FieldValue.arrayRemove(firestore.collection("resource").document(noteId)))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Successfully removed the reference from the user's "like_notes"
+                                            // You can perform any additional actions here if needed
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle any errors that occurred while updating the "like_notes" field
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while querying the "user" collection
+                    }
+                });
+    }
+
+    // Add Report Dialog
     private void addReportDialog() {
         addReportDialog.setContentView(R.layout.dialog_report);
         addReportDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -351,7 +510,8 @@ public class user_notesDetails extends AppCompatActivity {
                 });
     }
 
-    //load comments
+    // Get and Add Comment
+    // load comments
     @SuppressLint("NotifyDataSetChanged")
     private void loadComments(String noteId) {
         // Initialize the ArrayList before adding data into it
@@ -398,7 +558,7 @@ public class user_notesDetails extends AppCompatActivity {
         });
     }
 
-    //Add comment to firebase
+    // Add comment to firebase
     private void addCommentDialog() {
         // Inflate the dialog layout
         addCommentDialog.setContentView(R.layout.dialog_add_comment);
@@ -465,7 +625,7 @@ public class user_notesDetails extends AppCompatActivity {
         HashMap<String, Object> commentData = new HashMap<>();
         commentData.put("comment_timestamp", timestamp);
         commentData.put("comment_details", comment);
-        commentData.put("user_id", db.collection("user").document(firebaseAuth.getUid())); // Reference type
+        commentData.put("user_id", db.collection("user").document(Objects.requireNonNull(firebaseAuth.getUid()))); // Reference type
 
         // Set the data for the new comment document
         newCommentRef.set(commentData)
@@ -482,7 +642,7 @@ public class user_notesDetails extends AppCompatActivity {
                 });
     }
 
-    //Method to download the PDF file using DownloadManager
+    // Method to download the PDF file using DownloadManager
     private void downloadPdf(String url) {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             // HTTP/HTTPS URL: Use DownloadManager
@@ -520,7 +680,6 @@ public class user_notesDetails extends AppCompatActivity {
         }
     }
 
-    //request storage permission
     private void loadNoteDetails(String noteId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference noteRef = db.collection("resource").document(noteId);
@@ -530,6 +689,8 @@ public class user_notesDetails extends AppCompatActivity {
 
                 // Assuming the categoryName is stored as a DocumentReference
                 DocumentReference categoryRef = documentSnapshot.getDocumentReference("category_id");
+                assert categoryRef != null;
+                categoryId = categoryRef.getId();
 
                 assert categoryRef != null;
                 categoryRef.get().addOnSuccessListener(categorySnapshot -> {
@@ -552,6 +713,14 @@ public class user_notesDetails extends AppCompatActivity {
                 // author
                 authorID = Objects.requireNonNull(documentSnapshot.getDocumentReference("user_id")).getId();
                 loadAuthor(authorID);
+
+                if (firebaseAuth.getCurrentUser() == null || !firebaseAuth.getCurrentUser().getUid().equals(authorID)) {
+                    deleteBtn.setVisibility(View.GONE);
+                    editBtn.setVisibility(View.GONE);
+                }
+
+                userCanDeleteEditNote = Objects.requireNonNull(firebaseAuth.getUid()).equals(authorID);
+
                 // Pdf url
                 url = documentSnapshot.getString("resource_file");
                 loadPdfSize(url);

@@ -15,11 +15,11 @@ import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.example.eduhub.databinding.ActivityDashboardBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.eduhub.databinding.ActivityDashboardBinding;
 
 public class user_DashboardActivity extends AppCompatActivity {
     //view binding

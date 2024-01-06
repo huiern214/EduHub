@@ -91,8 +91,9 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
         Notes note = noteList.get(position);
         holder.noteTitle.setText(note.getResource_name());
         holder.noteDescription.setText(note.getResource_description());
-//        holder.noteCategory.setText(note.getCategory_id());
         noteId = note.getNotes_id();
+        String likesString = String.valueOf(note.getResource_likes());
+        holder.numOfLikes.setText(String.format("%s likes", likesString));
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference categoriesRef = db.collection("category");
@@ -329,7 +330,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
         private final TextView noteTitle;
         private final TextView noteDescription;
         private final TextView noteCategory;
-        private final TextView timestamp, noteSize, noteAuthor;
+        private final TextView timestamp, noteSize, noteAuthor, numOfLikes;
         private final PDFView pdfView;
         private final ToggleButton favouriteBtn, likeBtn;
 
@@ -345,6 +346,7 @@ public class user_AdapterNote extends RecyclerView.Adapter<user_AdapterNote.View
             noteAuthor = itemView.findViewById(R.id.authorTv);
             favouriteBtn = itemView.findViewById(R.id.favouriteBtn);
             likeBtn = itemView.findViewById(R.id.LikeBtn);
+            numOfLikes = itemView.findViewById(R.id.numberOfLikes);
 
             // Set click listener on the entire item view
             itemView.setOnClickListener(this);
