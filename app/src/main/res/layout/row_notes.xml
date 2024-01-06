@@ -174,14 +174,14 @@
 
             <TextView
                 android:id="@+id/numberOfLikes"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginEnd="5dp"
                 android:text="21 likes"
+                android:textColor="@color/dark_grey"
                 android:textSize="10sp"
-                android:layout_gravity="center"
-                android:textStyle="normal"
-                android:textColor="@color/dark_grey" />
+                android:textStyle="normal" />
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

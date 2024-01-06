@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <!--Toolbar-->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:id="@+id/toolbarRl"
@@ -40,21 +40,55 @@
             android:textStyle="bold"
             android:layout_toEndOf="@+id/backNotesBtn"/>
 
-        <ImageButton
-            android:id="@+id/reportNote"
-            android:contentDescription="report"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/material_symbols_flag_outline"
-            android:gravity="center_vertical"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-    </RelativeLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/deleteNoteBtn"
+                android:contentDescription="delete"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/rounded_delete_24"
+                android:gravity="center_vertical"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:clickable="true"
+                android:enabled="true" />
+            <ImageButton
+                android:id="@+id/editNoteBtn"
+                android:contentDescription="edit"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/edit_button"
+                android:gravity="center_vertical"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:clickable="true"
+                android:enabled="true" />
+            <ImageButton
+                android:id="@+id/reportNote"
+                android:contentDescription="report"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/material_symbols_flag_outline"
+                android:gravity="center_vertical"
+                android:layout_centerHorizontal="true"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <!--Content-->
     <LinearLayout

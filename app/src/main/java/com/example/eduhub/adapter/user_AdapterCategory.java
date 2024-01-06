@@ -2,7 +2,6 @@ package com.example.eduhub.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eduhub.databinding.RowCategoriesBinding;
 import com.example.eduhub.model.Category;
+import com.example.eduhub.user_edit_notes;
 import com.example.eduhub.user_filterCategory;
 import com.example.eduhub.user_uploadNotes;
 
@@ -33,23 +33,34 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
     private user_filterCategory filter;
     //declare a variable to store the selected position
     private int selectedCategoryPosition = RecyclerView.NO_POSITION;
+    private String actionType, noteId;
 
 
     public user_AdapterCategory (Context context, ArrayList<Category> categoryArrayList){
         this.context = context;
         this.categoryArrayList = categoryArrayList;
         this.filterList = categoryArrayList;
+        this.actionType = "upload";
+        this.noteId = "";
         //Register your class with EventBus
         //EventBus.getDefault().register(this);
     }
 
-//    public void onNoteDataEvent(user_noteDataEvent event){
-//        title = event.getTitle();
-//        description = event.getDescription();
-//        pdfUri = event.getPdfUri();
-//
-//        Log.d("user_AdapterCategory", "Pass Data: "+title+","+description+","+pdfUri);
-//    }
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
+    }
+
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
 
     public interface OnItemClickListener{
         void onItemClick(Category category);
@@ -101,7 +112,7 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
                         // Pass the category id and category name to another class
                         String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getCategory_id();
                         String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory_name();
-                        passCategoryNameToOtherClass(categoryName,categoryId);
+                        passCategoryNameToOtherClass(categoryName, categoryId, actionType);
                     }
                 } else {
                     // A new category is selected, update the selection
@@ -121,7 +132,7 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
                     // Pass the category id and category name to another class
                     String categoryId = categoryArrayList.get(holder.getAdapterPosition()).getCategory_id();
                     String categoryName = categoryArrayList.get(holder.getAdapterPosition()).getCategory_name();
-                    passCategoryNameToOtherClass(categoryName, categoryId);
+                    passCategoryNameToOtherClass(categoryName, categoryId, actionType);
                     Toast.makeText(v.getContext(),"Notes category chosen",Toast.LENGTH_SHORT).show();
                 }
                 lastClickTime = clickTime;
@@ -154,14 +165,20 @@ public class user_AdapterCategory extends RecyclerView.Adapter<user_AdapterCateg
 //        });
     }
 
-    private void passCategoryNameToOtherClass(String category_name, String category_id) {
+    private void passCategoryNameToOtherClass(String category_name, String category_id, String action_type) {
         //You can use Intent to pass data to another class/activity
-        Intent intent = new Intent(context, user_uploadNotes.class);
+        Intent intent;
+        if (action_type.equals("edit")){
+            intent = new Intent(context, user_edit_notes.class);
+        } else {
+            intent = new Intent(context, user_uploadNotes.class);
+        }
 //        intent.putExtra("NOTE_TITLE",title);
 //        intent.putExtra("NOTE_DESCRIPTION",description);
 //        intent.putExtra("PDF_URL",pdfUri);
-        intent.putExtra("CATEGORY_NAME",category_name);
-        intent.putExtra("CATEGORY_ID",category_id);
+        intent.putExtra("CATEGORY_NAME", category_name);
+        intent.putExtra("CATEGORY_ID", category_id);
+        intent.putExtra("noteId", noteId);
         context.startActivity(intent);
     }
 

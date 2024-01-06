@@ -26,10 +26,10 @@
             android:name=".admin_reports"
             android:exported="false" />
         <activity
-            android:name=".user_search"
+            android:name=".user_edit_notes"
             android:exported="false" />
         <activity
-            android:name=".model.user_search"
+            android:name=".user_search"
             android:exported="false" />
         <activity
             android:name=".EditProfile"

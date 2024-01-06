@@ -169,6 +169,8 @@ public class user_CategoryAdd extends AppCompatActivity {
     
                 // Setup adapter
                 adapterCategory = new user_AdapterCategory(user_CategoryAdd.this, categoryArrayList);
+                adapterCategory.setActionType(getIntent().getStringExtra("ACTION_TYPE"));
+                adapterCategory.setNoteId(getIntent().getStringExtra("noteId"));
                 // Set adapter to recyclerView
                 binding.categoriesRv.setAdapter(adapterCategory);
             } else {
