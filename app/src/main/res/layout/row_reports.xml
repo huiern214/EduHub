@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:background="@drawable/rectangle_2"
     app:cardCornerRadius="10dp"
@@ -14,13 +14,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/rectangle_2">
 
         <RelativeLayout
             android:id="@+id/pdfRl"
             android:layout_width="100dp"
-            android:layout_height="180dp"
+            android:layout_height="140dp"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
@@ -49,39 +49,34 @@
             android:layout_marginVertical="5dp"
             android:text="Note title"
             android:layout_toEndOf="@id/pdfRl"
-            android:maxLines="1"/>
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:textSize="21sp"/>
 
         <LinearLayout
-            android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal"
+            android:layout_marginRight="3dp">
 
-            <ImageView
+            <Button
+                android:id="@+id/solveReportBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/reportcomment"
-                android:layout_margin="5dp"/>
-            <TextView
-                android:id="@+id/numberOfReportsTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5 reports"
-                android:textColor="@color/dark_grey"
-                android:fontFamily="sans-serif-condensed"
-                android:textStyle="bold"/>
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:text="Solve" />
 
         </LinearLayout>
-
 
         <!--Author Name-->
         <LinearLayout
             android:id="@+id/authorLinearLayout"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="8dp"
             android:layout_below="@id/titleTv"
             android:layout_toEndOf="@id/pdfRl"
             android:layout_width="match_parent"
@@ -96,7 +91,7 @@
                 android:text="Author"/>
 
             <TextView
-                android:id="@+id/authorName"
+                android:id="@+id/authorNameTv"
                 style="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="@color/dark_grey"
                 android:layout_width="150dp"
@@ -105,9 +100,9 @@
 
         </LinearLayout>
 
-        <!--Date-->
+        <!--Category -->
         <LinearLayout
-            android:id="@+id/dateLinearLayout"
+            android:id="@+id/categoryLinearLayout"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
@@ -122,39 +117,10 @@
                 android:textColor="@color/dark_grey"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Date"/>
-
-            <TextView
-                android:id="@+id/date"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/dark_grey"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:text="dd/MM/yyyy"/>
-
-        </LinearLayout>
-
-        <!--Category -->
-        <LinearLayout
-            android:id="@+id/categoryLinearLayout"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_below="@id/dateLinearLayout"
-            android:layout_toEndOf="@id/pdfRl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/dark_grey"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
                 android:text="Category"/>
 
             <TextView
-                android:id="@+id/categoryName"
+                android:id="@+id/categoryNameTv"
                 style="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="@color/dark_grey"
                 android:layout_width="150dp"
@@ -180,15 +146,15 @@
                 android:textColor="@color/dark_grey"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Status"/>
+                android:text="Report user"/>
 
             <TextView
-                android:id="@+id/reportStatus"
+                android:id="@+id/reportUserTv"
                 style="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="@color/dark_grey"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="955 MB "/>
+                android:text="Xiao Ming"/>
 
         </LinearLayout>
 
@@ -223,34 +189,25 @@
 
         <!--Number of Downloads-->
         <LinearLayout
-            android:id="@+id/downloadLinearLayout"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_below="@id/viewsLinearLayout"
-            android:layout_toEndOf="@id/pdfRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:layout_below="@id/viewsLinearLayout"
+            android:background="@color/white_grey"
+            android:layout_margin="8dp">
 
             <TextView
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/dark_grey"
-                android:layout_width="100dp"
+                android:id="@+id/reportDescriptionTv"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Downloads"/>
-
-            <TextView
-                android:id="@+id/numberOfDownloads"
-                style="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/dark_grey"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:text="100"/>
-
+                android:layout_below="@+id/viewsLinearLayout"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="The worst note ever, the content is inappropriate."
+                android:textSize="16sp"
+                android:textStyle="normal" />
         </LinearLayout>
-
-
-        </RelativeLayout>
-
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>
