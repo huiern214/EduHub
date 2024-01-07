@@ -336,7 +336,7 @@ public class user_notesDetails extends AppCompatActivity {
         DocumentReference noteRef = firestore.collection("resource").document(noteId);
 
         // Delete the document
-        noteRef.delete()
+        noteRef.update("is_deleted", true)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

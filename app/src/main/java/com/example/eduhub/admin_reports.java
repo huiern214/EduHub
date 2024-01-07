@@ -1,11 +1,12 @@
 package com.example.eduhub;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
-import android.util.Log;
 
 import com.example.eduhub.adapter.admin_AdapterReport;
 import com.example.eduhub.databinding.ActivityAdminReportsBinding;
@@ -13,7 +14,6 @@ import com.example.eduhub.model.Report;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -49,6 +49,7 @@ public class admin_reports extends AppCompatActivity {
         reportRv.setAdapter(adapterReport);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void retrieveReportsFromFirebase() {
         //Initialize ArrayList
         reportArrayList = new ArrayList<>();
