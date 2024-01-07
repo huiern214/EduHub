@@ -1,9 +1,12 @@
 package com.example.eduhub.model;
 
-public class Report {
-    String report_id, reportDetails, report_timestamp, report_type, resource_id, user_id;
+import com.google.firebase.Timestamp;
 
-    public Report(String report_id, String reportDetails, String report_timestamp, String resource_id, String user_id) {
+public class Report {
+    String report_id, reportDetails, report_type, resource_id, user_id;
+    Timestamp report_timestamp;
+
+    public Report(String report_id, String reportDetails, Timestamp report_timestamp, String resource_id, String user_id) {
         this.report_id = report_id;
         this.reportDetails = reportDetails;
         this.report_timestamp = report_timestamp;
@@ -32,11 +35,11 @@ public class Report {
         this.reportDetails = reportDetails;
     }
 
-    public String getReport_timestamp() {
+    public Timestamp getReport_timestamp() {
         return report_timestamp;
     }
 
-    public void setReport_timestamp(String report_timestamp) {
+    public void setReport_timestamp(Timestamp report_timestamp) {
         this.report_timestamp = report_timestamp;
     }
 

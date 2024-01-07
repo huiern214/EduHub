@@ -109,9 +109,9 @@ public class user_notesDetails extends AppCompatActivity {
 
         noteTitle = findViewById(R.id.titleTv);
         noteDescription = findViewById(R.id.noteDescription);
-        noteCategory = findViewById(R.id.categoryName);
+        noteCategory = findViewById(R.id.categoryNameTv);
         noteDate = findViewById(R.id.date);
-        author = findViewById(R.id.authorName);
+        author = findViewById(R.id.authorNameTv);
         sizeTv = findViewById(R.id.size);
         noteImg = findViewById(R.id.pdfView);
         numberOfDownloads = findViewById(R.id.numberOfDownloads);

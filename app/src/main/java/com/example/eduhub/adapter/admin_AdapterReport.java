@@ -15,11 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.eduhub.MyApplication;
 import com.example.eduhub.databinding.RowReportsBinding;
 import com.example.eduhub.model.Report;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class admin_AdapterReport extends RecyclerView.Adapter<admin_AdapterReport.HolderReport> {
     public Context context;
@@ -51,8 +53,8 @@ public class admin_AdapterReport extends RecyclerView.Adapter<admin_AdapterRepor
         loadReportUser(user_id, holder);
         
         //load timestamp 
-        String timestamp = model.getReport_timestamp();
-        String reportDate = MyApplication.formatTimestamp(Long.parseLong(timestamp));
+        Timestamp timestamp = model.getReport_timestamp();
+        String reportDate = MyApplication.formatTimestamp(timestamp);
         String reportDescription = model.getReportDetails();
 
         // set data
@@ -97,8 +99,8 @@ public class admin_AdapterReport extends RecyclerView.Adapter<admin_AdapterRepor
                         if (document.exists()){
                             //Get authorName, category, title
                             String noteTitle = document.getString("resource_name");
-                            String noteCategoryId = document.getString("category_id");
-                            String authorUserId = document.getString("user_id");
+                            String noteCategoryId = Objects.requireNonNull(document.getDocumentReference("category_id")).getId();
+                            String authorUserId = Objects.requireNonNull(document.getDocumentReference("user_id")).getId();
 
                             holder.noteTitleTv.setText(noteTitle);
                             loadNoteCategory(noteCategoryId, holder);

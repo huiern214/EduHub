@@ -96,9 +96,14 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                     document.getString("resource_file"), resource_likes,
                                     document.getString("resource_name"),
                                     document.getTimestamp("resource_upload_datetime"),
-                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
-//                            Notes note = document.toObject(Notes.class);
-                            noteList.add(note);
+                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId(),
+                                    document.getBoolean("is_deleted")
+                            );
+
+                            // Add the Note to the list
+                            if (!note.getIs_deleted()){
+                                noteList.add(note);
+                            }
                         }
                         noteAdapter.notifyDataSetChanged();
                     } else {
@@ -196,9 +201,14 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                     document.getString("resource_file"), resource_likes,
                                     document.getString("resource_name"),
                                     document.getTimestamp("resource_upload_datetime"),
-                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
+                                    Objects.requireNonNull(document.getDocumentReference("user_id")).getId(),
+                                    document.getBoolean("is_deleted")
+                            );
 
-                            FilteredNoteList.add(note);
+                            // Add the Note to the list
+                            if (!note.getIs_deleted()){
+                                FilteredNoteList.add(note);
+                            }
                         }
 
                         // Set up the adapter and notify data changes
