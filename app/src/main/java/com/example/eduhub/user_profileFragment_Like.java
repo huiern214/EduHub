@@ -80,12 +80,15 @@ public class user_profileFragment_Like extends Fragment {
                                             int likes = documentSnapshot1.getLong("resource_likes").intValue();
                                             String resourceName = documentSnapshot1.getString("resource_name");
                                             Timestamp timestamp = documentSnapshot1.getTimestamp("resource_upload_datetime");
+                                            Boolean is_deleted = documentSnapshot1.getBoolean("is_deleted");
 
                                             // Create a Note object
-                                            Notes note = new Notes(notesId, categoryId, description, fileUrl, likes, resourceName, timestamp, userId);
+                                            Notes note = new Notes(notesId, categoryId, description, fileUrl, likes, resourceName, timestamp, userId, is_deleted);
 
                                             // Add the Note to the list
-                                            noteList.add(note);
+                                            if (!note.getIs_deleted()){
+                                                noteList.add(note);
+                                            }
                                         }
 
                                         // Notify the adapter of the data change

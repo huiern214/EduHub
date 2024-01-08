@@ -98,9 +98,14 @@ public class user_search_all extends Fragment {
                             document.getString("resource_file"), resource_likes,
                             document.getString("resource_name"),
                             document.getTimestamp("resource_upload_datetime"),
-                            Objects.requireNonNull(document.getDocumentReference("user_id")).getId());
+                            Objects.requireNonNull(document.getDocumentReference("user_id")).getId(),
+                            document.getBoolean("is_deleted")
+                            );
 //                            Notes note = document.toObject(Notes.class);
-                    noteList.add(note);
+                    // Add the Note to the list
+                    if (!note.getIs_deleted()){
+                        noteList.add(note);
+                    }
                 }
                 //Setup adapter
                 noteAdapter = new user_AdapterNote(getContext(),noteList);

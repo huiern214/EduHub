@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.eduhub.adapter.admin_AdapterReport;
 import com.example.eduhub.databinding.ActivityAdminReportsBinding;
 import com.example.eduhub.model.Report;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class admin_reports extends AppCompatActivity {
     private ActivityAdminReportsBinding binding;
@@ -47,6 +50,7 @@ public class admin_reports extends AppCompatActivity {
         reportRv.setAdapter(adapterReport);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void retrieveReportsFromFirebase() {
         //Initialize ArrayList
         reportArrayList = new ArrayList<>();
@@ -59,10 +63,10 @@ public class admin_reports extends AppCompatActivity {
                 reportArrayList.clear();
                 for (QueryDocumentSnapshot document : task.getResult()){
                     String report_id = document.getId();
-                    String report_timestamp = document.getString("report_timestamp");
+                    Timestamp report_timestamp = document.getTimestamp("report_timestamp");
                     String report_details = document.getString("report_details");
-                    String resource_id = document.getString("resource_id");
-                    String user_id = document.getString("user_id");
+                    String resource_id = Objects.requireNonNull(document.getDocumentReference("resource_id")).getId();
+                    String user_id = Objects.requireNonNull(document.getDocumentReference("user_id")).getId();
 
                     //Create your report object with the report ID
                     Report report = new Report(report_id, report_details, report_timestamp, resource_id, user_id);
