@@ -3,6 +3,8 @@ package com.example.eduhub;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,6 +49,14 @@ public class admin_reports extends AppCompatActivity {
         reportArrayList = new ArrayList<>();
         adapterReport = new admin_AdapterReport(this, reportArrayList);
         reportRv.setAdapter(adapterReport);
+
+        ImageButton backBtn = findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @SuppressLint("NotifyDataSetChanged")

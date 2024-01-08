@@ -7,4 +7,5 @@
     <color name="dark_grey">#979797</color>
     <color name="white_grey">#F2F2F7</color>
     <color name="selected_color">#686BFF</color>
+    <color name="colorAccent">#4885ed</color>
 </resources>

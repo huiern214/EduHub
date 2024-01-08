@@ -97,8 +97,8 @@ public class user_DashboardActivity extends AppCompatActivity {
                     uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
                     // Find views from uploadDialog
-                    Button uploadNote = uploadDialog.findViewById(R.id.uploadNotesBtn);
-                    Button uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
+//                    Button uploadNote = uploadDialog.findViewById(R.id.uploadNotesBtn);
+//                    Button uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
 
                     uploadNote.setOnClickListener(new View.OnClickListener() {
                         @Override
