@@ -100,7 +100,6 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                     document.getBoolean("is_deleted")
                             );
 
-                            // Add the Note to the list
                             if (!note.getIs_deleted()){
                                 noteList.add(note);
                             }
@@ -205,7 +204,6 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                     document.getBoolean("is_deleted")
                             );
 
-                            // Add the Note to the list
                             if (!note.getIs_deleted()){
                                 FilteredNoteList.add(note);
                             }

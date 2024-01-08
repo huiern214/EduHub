@@ -99,7 +99,9 @@ public class user_search_note extends Fragment {
                             document.getTimestamp("resource_upload_datetime"),
                             Objects.requireNonNull(document.getDocumentReference("user_id")).getId(),
                             document.getBoolean("is_deleted")
-                            );
+                    );
+
+                    // Add the Note to the list
                     if (!note.getIs_deleted()){
                         noteList.add(note);
                     }

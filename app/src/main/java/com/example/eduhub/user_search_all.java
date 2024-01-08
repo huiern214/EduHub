@@ -100,9 +100,8 @@ public class user_search_all extends Fragment {
                             document.getTimestamp("resource_upload_datetime"),
                             Objects.requireNonNull(document.getDocumentReference("user_id")).getId(),
                             document.getBoolean("is_deleted")
-                            );
-//                            Notes note = document.toObject(Notes.class);
-                    // Add the Note to the list
+                    );
+
                     if (!note.getIs_deleted()){
                         noteList.add(note);
                     }

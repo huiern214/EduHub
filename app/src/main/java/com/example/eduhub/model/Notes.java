@@ -15,6 +15,8 @@ public class Notes {
     String user_id;
     Boolean is_deleted;
 
+    Boolean is_deleted;
+
     //constructor
     public Notes() {
     }
