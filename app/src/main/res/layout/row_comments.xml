@@ -35,13 +35,12 @@
                     android:id="@+id/profileImg"
                     android:layout_width="65dp"
                     android:layout_height="65dp"
-                    android:scaleType="centerCrop"
                     android:layout_centerVertical="true"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/baseline_person_2_24"
                     app:shapeAppearanceOverlay="@style/styleCircleImage"
                     app:strokeColor="@color/dark_grey"
-                    app:strokeWidth="1dp">
-                </com.google.android.material.imageview.ShapeableImageView>
+                    app:strokeWidth="1dp"></com.google.android.material.imageview.ShapeableImageView>
 
             </RelativeLayout>
 

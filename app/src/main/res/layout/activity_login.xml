@@ -117,15 +117,19 @@
             <!--Forgot Password-->
             <TextView
                 android:id="@+id/forgotTv"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/passwordTil"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:minHeight="48dp"
                 android:padding="5dp"
                 android:text="@string/forgot_password"
-                android:textColor="@color/dark_grey"/>
+                android:textColor="@color/dark_grey" />
 
             <Button
                 android:id="@+id/loginBtn"

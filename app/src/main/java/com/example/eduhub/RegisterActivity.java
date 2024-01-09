@@ -1,8 +1,5 @@
 package com.example.eduhub;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,18 +9,19 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.eduhub.MainActivity;
-import com.example.eduhub.R;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.eduhub.databinding.ActivityRegisterBinding;
-import com.example.eduhub.user_DashboardActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
     //view binding
@@ -82,7 +80,8 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    private String name="", email="", password="", cpassword="";
+    private String name = "", email = "", password = "", cpassword = "";
+
     private void validateData() {
         /*Before creating an account, let's do some data validation*/
 
@@ -118,7 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
         //show progress 
         progressDialog.setMessage("Creating account...");
         progressDialog.show();
-        
+
         //create user in firebase auth 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -133,52 +132,48 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         //account creating failed 
                         progressDialog.dismiss();
-                        Toast.makeText(RegisterActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-        }
+    }
 
     private void updateUserInfo() {
         progressDialog.setMessage("Saving user info...");
 
-        //timestamp
-        long timestamp = System.currentTimeMillis();
-
-        //get current user uid, since user is registered so we can get now
+        // Get the current user UID
         String uid = firebaseAuth.getUid();
 
-        //setup data to add in db
-        HashMap<String, Object> hashmap = new HashMap<>();
-        hashmap.put("uid", uid);
-        hashmap.put("email", email);
-        hashmap.put("name", name);
-        hashmap.put("profileImage", "");//add empty, will do later
-        hashmap.put("userType", "user");//possible values are user, admin, will make admin manually in firebase realtime database by changing this value
-        hashmap.put("timestamp", timestamp);
+        if (uid != null) {
 
-        //set data to db
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-        ref.child(uid)
-                .setValue(hashmap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        //data added to db
+            // Setup data to add in Firestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("user").document(uid);
+
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("uid", uid);
+            userData.put("user_email", email);
+            userData.put("user_name", name);
+            userData.put("user_photo", ""); // Add empty, will do later
+            userData.put("user_type", "user"); // Possible values are user, admin, will make admin manually in Firestore
+
+            // Set data in Firestore
+            userRef.set(userData)
+                    .addOnSuccessListener(aVoid -> {
+                        // Data added to Firestore
                         progressDialog.dismiss();
                         Toast.makeText(RegisterActivity.this, "Account created...", Toast.LENGTH_SHORT).show();
-                        //since user account is created so start dashboard of user
+                        // Since the user account is created, start the user dashboard
                         startActivity(new Intent(RegisterActivity.this, user_DashboardActivity.class));
                         finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        //data failed adding to db
+                    })
+                    .addOnFailureListener(e -> {
+                        // Data failed to be added to Firestore
                         progressDialog.dismiss();
                         Toast.makeText(RegisterActivity.this, String.format("%s", e.getMessage()), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    });
+        } else {
+            progressDialog.dismiss();
+            Toast.makeText(RegisterActivity.this, "UID is null", Toast.LENGTH_SHORT).show();
         }
     }
-
+}

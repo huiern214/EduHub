@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".LogInSignUp.MainActivity">
+    tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -74,7 +74,7 @@
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:text="CREATE AN ACCOUNT"
-        android:textColor="@color/purple"
+        android:textColor="@color/dark_grey"
         android:textSize="20sp"
         android:background="@drawable/shape_button02"
         app:layout_constraintBottom_toBottomOf="parent"

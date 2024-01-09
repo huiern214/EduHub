@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditProfile"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/toolbarRl"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/shape_toolbar01"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
+            android:src="@drawable/baseline_keyboard_backspace_24"
+            android:layout_margin="5dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:text="Edit Profile"
+            android:textSize="25sp"
+            android:layout_marginEnd="145dp"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"/>
+
+        <ImageButton
+            android:id="@+id/deleteAccount"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
+            android:src="@drawable/rounded_delete_24"
+            android:layout_margin="5dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="35dp">
+
+        <LinearLayout
+            android:id="@+id/profile_pic_section"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="100dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_pic_btn"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/baseline_person_2_24"
+                android:scaleType="centerCrop"
+                app:strokeColor="@color/dark_grey"
+                app:strokeWidth="1dp"
+                app:shapeAppearanceOverlay="@style/styleCircleImage"
+                android:contentDescription="profile picture" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/ly1"
+            android:layout_below="@id/profile_pic_section"
+            android:layout_marginRight="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!--Name-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nameTil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                app:hintEnabled="false">
+
+                <EditText
+                    android:id="@+id/nameEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/shape_edittext01"
+                    android:drawableStart="@drawable/baseline_account_circle_24"
+                    android:drawablePadding="@dimen/activity_horizontal_margin"
+                    android:hint="@string/name"
+                    android:inputType="text"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/dark_grey" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--Email-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/emailTil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/nameTil"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="2dp"
+                app:hintEnabled="false"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:id="@+id/ly2"
+            android:layout_marginTop="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ly1"/>
+
+        <RelativeLayout
+            android:layout_below="@+id/ly2"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/updateBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_button01"
+                android:text="Update Profile"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp"/>
+
+            <Button
+                android:id="@+id/resetBtn"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/updateBtn"
+                android:background="@drawable/shape_button03"
+                android:text="Reset Password"
+                android:textColor="@color/dark_grey"
+                android:textSize="20sp"
+                android:layout_marginRight="2dp"
+                android:layout_marginLeft="2dp"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

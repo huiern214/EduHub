@@ -1,13 +1,13 @@
 package com.example.eduhub;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eduhub.databinding.ActivityUserReadNoteBinding;
 import com.github.barteksc.pdfviewer.listener.OnErrorListener;
@@ -15,11 +15,8 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -55,26 +52,29 @@ public class user_readNote extends AppCompatActivity {
 
     private void loadNoteDetails() {
         Log.d(TAG, "loadNoteDetails: Get Pdf URL...");
-        // Database Reference to get note details e.g. get note url using noteId
+        // Firestore Reference to get note details e.g. get note url using noteId
         // Step (1) Get Note Url using noteId
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Notes");
-        ref.child(noteId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // Get book url
-                        String pdfUrl = "" + snapshot.child("url").getValue();
-                        Log.d(TAG, "onDataChange: PDF URL" + pdfUrl);
-                        // Step (2) load Pdf using that url from firebase storage
-                        loadNoteFromUrl(pdfUrl);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-    }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference noteRef = db.collection("resource").document(noteId);
+    
+        noteRef.get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    // Get PDF URL
+                    String pdfUrl = documentSnapshot.getString("resource_file");
+                    Log.d(TAG, "onSuccess: PDF URL" + pdfUrl);
+                    // Step (2) Load PDF using that URL from Firebase Storage
+                    loadNoteFromUrl(pdfUrl);
+                } else {
+                    // Handle the case where the document does not exist
+                    Log.d(TAG, "No such document");
+                }
+            })
+            .addOnFailureListener(e -> {
+                // Handle errors here
+                Log.e(TAG, "Error getting document", e);
+            });
+    }    
 
     private void loadNoteFromUrl(String pdfUrl) {
         Log.d(TAG, "loadNoteFromUrl: Get PDF from storage");

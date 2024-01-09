@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".admin_solvedFragment"
+    android:orientation="vertical"
+    android:background="@color/white_grey">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/toolbarRl"
+        android:orientation="horizontal"
+        android:background="@drawable/shape_toolbar01">
+        <ImageButton
+            android:id="@+id/backBtn"
+            android:layout_width="48dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="BackButton"
+            android:src="@drawable/baseline_keyboard_backspace_24"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="70dp"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:text="Report Details"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/noteCard"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/rectangle_2"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp"
+        app:contentPadding="5dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rectangle_2">
+
+            <RelativeLayout
+                android:id="@+id/pdfRl"
+                android:layout_width="100dp"
+                android:layout_height="140dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/light_grey">
+
+                <!--PDF View-->
+                <com.github.barteksc.pdfviewer.PDFView
+                    android:id="@+id/pdfView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <!--Progress Bar-->
+                <!--            <ProgressBar-->
+                <!--                android:id="@+id/progressBar"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent" />-->
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/titleTv"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:text="Note title"
+                android:layout_toEndOf="@id/pdfRl"
+                android:maxLines="1"
+                android:textStyle="bold"
+                android:textSize="21sp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:layout_marginRight="3dp"/>
+
+            <!--Author Name-->
+            <LinearLayout
+                android:id="@+id/authorLinearLayout"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_below="@id/titleTv"
+                android:layout_toEndOf="@id/pdfRl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Author"/>
+
+                <TextView
+                    android:id="@+id/authorNameTv"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Author name"/>
+
+            </LinearLayout>
+
+            <!--Category -->
+            <LinearLayout
+                android:id="@+id/categoryLinearLayout"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/authorLinearLayout"
+                android:layout_toEndOf="@id/pdfRl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Category"/>
+
+                <TextView
+                    android:id="@+id/categoryNameTv"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Category name"/>
+
+            </LinearLayout>
+
+            <!--Size-->
+            <LinearLayout
+                android:id="@+id/sizeLinearLayout"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/categoryLinearLayout"
+                android:layout_toEndOf="@id/pdfRl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Total cases"/>
+
+                <TextView
+                    android:id="@+id/totalReportCases"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textColor="@color/dark_grey" />
+
+            </LinearLayout>
+
+            <!--Number of Views-->
+            <LinearLayout
+                android:id="@+id/viewsLinearLayout"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/sizeLinearLayout"
+                android:layout_toEndOf="@id/pdfRl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Pending cases"/>
+
+                <TextView
+                    android:id="@+id/pendingReportCases"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="1"/>
+
+            </LinearLayout>
+
+            <!--Number of Downloads-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/viewsLinearLayout"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/white_grey"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/isDeletedTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="The content has been deleted."
+                    android:visibility="gone" />
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+        <Button
+            android:id="@+id/deleteNoteBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="5dp"
+            android:backgroundTint="#F24646"
+            android:text="Delete Notes"
+        />
+        <Button
+            android:id="@+id/ignoreBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="5dp"
+            android:backgroundTint="@color/purple"
+            android:text="Mark as Solved"
+        />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/report_details_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        tools:listitem="@layout/row_user_reports_details">
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

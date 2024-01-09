@@ -18,11 +18,16 @@
                 android:elevation="100dp"
                 android:orientation="vertical">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/user_pic"
+                android:background="@drawable/baseline_person_2_24"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/styleCircleImage"
+                app:strokeColor="@color/dark_grey"
+                app:strokeWidth="1dp"
                 android:contentDescription="profile picture" />
         </LinearLayout>
 
@@ -161,7 +166,7 @@
                 android:layout_margin="10dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:weightSum="2"
+                android:weightSum="3"
                 android:layout_below="@id/textLinearLayout"
                 >
 
@@ -169,7 +174,7 @@
                     android:id="@+id/btnFragmentPosts"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6"
+                    android:layout_weight="1"
                     android:text="@string/posts"
                     android:textAlignment="center"
                     android:background="@drawable/button_category"
@@ -180,7 +185,7 @@
                     android:id="@+id/btnFragmentFavourite"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
+                    android:layout_weight="1"
                     android:text="@string/favourite"
                     android:textAlignment="center"
                     android:background="@drawable/button_category"
@@ -191,7 +196,7 @@
                     android:id="@+id/btnFragmentLike"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6"
+                    android:layout_weight="1"
                     android:text="@string/like"
                     android:textAlignment="center"
                     android:background="@drawable/button_category"

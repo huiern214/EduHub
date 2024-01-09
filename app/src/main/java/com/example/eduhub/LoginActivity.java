@@ -1,7 +1,5 @@
 package com.example.eduhub;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,20 +7,19 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
-//import com.example.eduhub.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.eduhub.databinding.ActivityLoginBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
 
     //progress dialog
     private ProgressDialog progressDialog;
+
+    private String email="", password="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +73,16 @@ public class LoginActivity extends AppCompatActivity {
                 onBackButtonClicked();
             }
         });
+
+        TextView forgotPasswordTv = findViewById(R.id.forgotTv);
+        //Set an OnClickListener to handle the forgot password click
+        forgotPasswordTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, ForgotPassword.class);
+                startActivity(i);
+            }
+        });
     }
 
     private void onBackButtonClicked() {
@@ -82,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private String email="", password="";
     private void validateData() {
         /*Before log in, lets do some data validation*/
 
@@ -122,44 +130,45 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(Exception e) {
                         //login failed
                         progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Incorrect login credential.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void checkUser() {
         progressDialog.setMessage("Checking User");
-        // check if user is user or admin from the realtime database
-        // get the current user
+        // Check if the user is a user or admin in Firestore
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-        // check in the database
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
-        ref.child(firebaseUser.getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        progressDialog.dismiss();
-                        // get user type
-                        String userType = "" + snapshot.child("userType").getValue();
-                        // check user type
-                        if (userType.equals("user")) {
-                            // this is a simple user, open the user dashboard
-                            startActivity(new Intent(LoginActivity.this, user_DashboardActivity.class));
-                            finish();
-                        } else if (userType.equals("admin")) {
-                            // this is an admin, open the admin dashboard
-                            startActivity(new Intent(LoginActivity.this, DashboardAdminActivity.class));
-                            finish();
-                        }
+        if (firebaseUser != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("user").document(firebaseUser.getUid());
+    
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                progressDialog.dismiss();
+                if (documentSnapshot.exists()) {
+                    String userType = documentSnapshot.getString("user_type");
+                    if ("user".equals(userType)) {
+                        // This is a simple user, open the user dashboard
+                        startActivity(new Intent(LoginActivity.this, user_DashboardActivity.class));
+                        finish();
+                    } else if ("admin".equals(userType)) {
+                        // This is an admin, open the admin dashboard
+                        startActivity(new Intent(LoginActivity.this, admin_DashboardAdminActivity.class));
+                        finish();
+                    } else if ("deleted_user".equals(userType)){
+                        Toast.makeText(this, "The user account has been deleted.", Toast.LENGTH_SHORT);
+                        finish();
                     }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        progressDialog.dismiss();
-                        // Handle the error here
-                        Toast.makeText(LoginActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
+                } else {
+                    // User document does not exist
+                    // Handle the case accordingly
+                    Toast.makeText(LoginActivity.this, "User document does not exist", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                // Handle the error here
+                Toast.makeText(LoginActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        }
+    }    
 }

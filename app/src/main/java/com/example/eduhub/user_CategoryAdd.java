@@ -1,9 +1,5 @@
 package com.example.eduhub;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -21,20 +17,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.example.eduhub.MainActivity;
-import com.example.eduhub.user_AdapterCategory;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
+import com.example.eduhub.adapter.user_AdapterCategory;
 import com.example.eduhub.databinding.ActivityCategoryAddBinding;
-import com.example.eduhub.user_ModelCategory;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.eduhub.model.Category;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +43,7 @@ public class user_CategoryAdd extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     // Arraylist to store category
-    private ArrayList<user_ModelCategory> categoryArrayList;
+    private ArrayList<Category> categoryArrayList;
     // Adapter
     private user_AdapterCategory adapterCategory;
 
@@ -153,34 +147,39 @@ public class user_CategoryAdd extends AppCompatActivity {
     private void loadCategories() {
         // Initialize ArrayList
         categoryArrayList = new ArrayList<>();
-
-        // Get reference to the "Categories" node in Firebase
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Categories");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+    
+        // Get reference to the "category" collection in Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference categoriesRef = db.collection("category");
+    
+        categoriesRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
                 // Clear ArrayList before adding data into it
                 categoryArrayList.clear();
-
-                for (DataSnapshot ds : snapshot.getChildren()) {
+    
+                for (QueryDocumentSnapshot document : task.getResult()) {
                     // Get data
-                    user_ModelCategory model = ds.getValue(user_ModelCategory.class);
+                    String category_id = document.getId(); // Get the document ID
+                    String category_name = document.getString("category_name");
+                    // Create your Category object with the document ID
+                    Category category = new Category(category_id, category_name);
                     // Add to ArrayList
-                    categoryArrayList.add(model);
+                    categoryArrayList.add(category);
                 }
-
+    
                 // Setup adapter
                 adapterCategory = new user_AdapterCategory(user_CategoryAdd.this, categoryArrayList);
+                adapterCategory.setActionType(getIntent().getStringExtra("ACTION_TYPE"));
+                adapterCategory.setNoteId(getIntent().getStringExtra("noteId"));
                 // Set adapter to recyclerView
                 binding.categoriesRv.setAdapter(adapterCategory);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle onCancelled
+            } else {
+                // Handle errors here
+                Log.w("Error loading categories", task.getException());
             }
         });
     }
+    
 
     private void validateData() {
         // Initialize views
@@ -198,41 +197,34 @@ public class user_CategoryAdd extends AppCompatActivity {
         // Show progress
         progressDialog.setMessage("Adding category...");
         progressDialog.show();
-
+    
         // Get timestamp
         long timestamp = System.currentTimeMillis();
-
-        // Setup info to add in Firebase DB
+    
+        // Setup info to add in Firestore
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("id", "" + timestamp);
-        hashMap.put("category", "" + category);
-        hashMap.put("timestamp", timestamp);
-        hashMap.put("uid", "" + firebaseAuth.getUid());
-
-        // Add to Firebase DB... Database Root > Categories > categoryId > category info
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Categories");
-        ref.child("" + timestamp)
-                .setValue(hashMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        // Category added successfully
-                        progressDialog.dismiss();
-                        Toast.makeText(user_CategoryAdd.this, "Category added successfully...", Toast.LENGTH_SHORT).show();
-                        // Dismiss the dialog or handle UI accordingly
-                        addNewCategoryDialog.dismiss();
-                    }
+        hashMap.put("category_name", category);
+    
+        // Add to Firestore... collection: "category", document: categoryId
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference categoriesRef = db.collection("category");
+    
+        categoriesRef
+                .add(hashMap)
+                .addOnSuccessListener(aVoid -> {
+                    // Category added successfully
+                    progressDialog.dismiss();
+                    Toast.makeText(user_CategoryAdd.this, "Category added successfully...", Toast.LENGTH_SHORT).show();
+                    // Dismiss the dialog or handle UI accordingly
+                    addNewCategoryDialog.dismiss();
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Category add failed
-                        progressDialog.dismiss();
-                        Toast.makeText(user_CategoryAdd.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    // Category add failed
+                    progressDialog.dismiss();
+                    Toast.makeText(user_CategoryAdd.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
+    
     private void onBackButtonClicked() {
         //Implement the desired action when the back button is clicked
         //startActivity(new Intent(CategoryAdd.this,HomeFragment.class));

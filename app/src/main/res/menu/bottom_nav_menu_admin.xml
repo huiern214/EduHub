@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+        android:title="Home"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/report"
+        android:icon="@drawable/material_symbols_flag_outline"
+        android:title="Report"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/solved"
+        android:icon="@drawable/note"
+        android:title="Solved"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/user"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="User"
+        app:showAsAction="ifRoom" />
+</menu>

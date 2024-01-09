@@ -64,4 +64,9 @@
     <string name="favourite">Favourite</string>
     <string name="posts">Posts</string>
     <string name="like">Likes</string>
+    <string name="reset">Reset</string>
+    <string name="privacy">Privacy</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="log_out">Log Out</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

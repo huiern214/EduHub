@@ -33,12 +33,12 @@
                 android:scrollbars="none">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/uploaded_videos"
+                    android:id="@+id/posts_videos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/row_videos_edited">
+                    tools:listitem="@layout/fragment_home_video">
                 </androidx.recyclerview.widget.RecyclerView>
             </HorizontalScrollView>
         </LinearLayout>
@@ -62,13 +62,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginBottom="10dp">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/uploaded_notes"
+                    android:id="@+id/posts_notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:listitem="@layout/row_notes_edited"/>
+                    tools:listitem="@layout/row_notes"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
