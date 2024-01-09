@@ -1,12 +1,13 @@
 package com.example.eduhub;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -25,7 +26,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class EditProfile extends AppCompatActivity {
@@ -38,8 +38,7 @@ public class EditProfile extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
     ActivityEditProfileBinding binding;
-
-    // Your other class variables
+    Dialog deleteAccountDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +96,15 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(EditProfile.this, ForgotPassword.class));
+            }
+        });
+
+        //pop up dialog handle
+        deleteAccountDialog = new Dialog(this);
+        binding.deleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccountDialog();
             }
         });
     }
@@ -223,10 +231,35 @@ public class EditProfile extends AppCompatActivity {
         }
     }
 
+    private void deleteAccountDialog(){
+        deleteAccountDialog.setContentView(R.layout.dialog_delete_account);
+        deleteAccountDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-    // Function to upload the profile picture to Firebase Storage and update the Firestore document with the image URL
-    // You can implement this function based on your requirements
+        //Find views from the addCommentDialog
+        ImageButton closeDeleteProfileBtn = deleteAccountDialog.findViewById(R.id.closeDeleteProfileBtn);
+        Button submitDeleteProfileBtn = deleteAccountDialog.findViewById(R.id.submitDeleteProfileBtn);
 
-    // You may also want to handle permissions for accessing the camera or gallery to select/capture images.
+        closeDeleteProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccountDialog.dismiss();
+            }
+        });
+
+        submitDeleteProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyApplication.deleteProfile(getApplicationContext(), currentUser.getUid());
+                deleteAccountDialog.dismiss();
+                finish();
+                startActivity(new Intent(EditProfile.this, MainActivity.class));
+            }
+        });
+
+
+        // Show the dialog
+        deleteAccountDialog.show();
+    }
+
 
 }

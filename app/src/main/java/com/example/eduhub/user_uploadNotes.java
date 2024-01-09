@@ -372,6 +372,7 @@ public class user_uploadNotes extends AppCompatActivity {
         noteData.put("resource_upload_datetime", timestamp);
         noteData.put("resource_views", views);
         noteData.put("user_id", userRef); // Use DocumentReference
+        noteData.put("is_deleted", false);
     
         CollectionReference notesRef = db.collection("resource");
 

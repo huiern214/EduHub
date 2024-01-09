@@ -161,7 +161,7 @@ public class user_profileFragment extends Fragment {
     private void countUserPosts(String userId) {
         CollectionReference resourceRef = firestore.collection("resource");
         DocumentReference userRef = firestore.collection("user").document(userId);
-        resourceRef.whereEqualTo("user_id", userRef)
+        resourceRef.whereEqualTo("user_id", userRef).whereEqualTo("is_deleted", false)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     int postCount = queryDocumentSnapshots.size();

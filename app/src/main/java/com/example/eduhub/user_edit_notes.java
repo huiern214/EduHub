@@ -246,6 +246,4 @@ public class user_edit_notes extends AppCompatActivity {
             Log.e("Category details", "Error loading category details: " + e.getMessage());
         });
     }
-
-
 }
