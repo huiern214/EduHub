@@ -20,8 +20,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 //application runs before launcher activity
 public class MyApplication extends Application {
@@ -299,4 +301,35 @@ public class MyApplication extends Application {
                 });
     }
 
+    public static void deleteProfile(Context context, String userId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Reference to the user document in the "resource" collection
+        DocumentReference userRef = firestore.collection("user").document(userId);
+
+        // Setup data to update (change the fields you want to update)
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("user_name", "Deleted User");
+        userUpdates.put("user_email", "");
+        userUpdates.put("user_photo", ""); // Include the updated category reference
+        userUpdates.put("user_type", "deleted_user");
+
+        // Delete the document
+        userRef.update(userUpdates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Successfully deleted the note
+                        // You can perform any additional actions here if needed
+                        Toast.makeText(context, "User account deleted successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while deleting the note
+                        Toast.makeText(context, "Failed to delete user account: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

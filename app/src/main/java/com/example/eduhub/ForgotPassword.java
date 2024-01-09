@@ -102,7 +102,7 @@ public class ForgotPassword extends AppCompatActivity {
                                     });
                         } else {
                             // Email does not exist in Firestore
-                            Toast.makeText(ForgotPassword.this, "Email is not registered.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ForgotPassword.this, "Email is not registered or the account has been deleted.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 })

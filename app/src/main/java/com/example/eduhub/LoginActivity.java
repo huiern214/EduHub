@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(Exception e) {
                         //login failed
                         progressDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Incorrect login credential.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -154,6 +154,9 @@ public class LoginActivity extends AppCompatActivity {
                     } else if ("admin".equals(userType)) {
                         // This is an admin, open the admin dashboard
                         startActivity(new Intent(LoginActivity.this, admin_DashboardAdminActivity.class));
+                        finish();
+                    } else if ("deleted_user".equals(userType)){
+                        Toast.makeText(this, "The user account has been deleted.", Toast.LENGTH_SHORT);
                         finish();
                     }
                 } else {
