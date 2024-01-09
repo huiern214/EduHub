@@ -1,5 +1,7 @@
 package com.example.eduhub;
 
+import com.example.eduhub.databinding.ActivityDashboardAdminBinding;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,12 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.eduhub.databinding.ActivityDashboardAdminBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,8 +31,8 @@ public class admin_DashboardAdminActivity extends AppCompatActivity {
     //Bottom Navigation
     BottomNavigationView bottomNavigationView;
     user_HomeFragment homeFragment = new user_HomeFragment();
-    user_shortsFragment shortsFragment = new user_shortsFragment();
-    user_calendarFragment calendarFragment = new user_calendarFragment();
+    admin_reportFragment adminReports = new admin_reportFragment();
+    admin_solvedFragment solvedFragment = new admin_solvedFragment();
     user_profileFragment profileFragment = new user_profileFragment();
 
     //Upload Materials
@@ -89,40 +89,11 @@ public class admin_DashboardAdminActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.home) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, homeFragment).commit();
                     return true;
-                } else if (item.getItemId() == R.id.shorts) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, shortsFragment).commit();
+                } else if (item.getItemId() == R.id.report) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, adminReports).commit();
                     return true;
-                } else if (item.getItemId() == R.id.upload) {
-                    uploadDialog.setContentView(R.layout.dialog_upload_materials);
-                    uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-                    // Find views from uploadDialog
-                    Button uploadNote = uploadDialog.findViewById(R.id.uploadNotesBtn);
-                    Button uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
-
-                    uploadNote.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startActivity(new Intent(admin_DashboardAdminActivity.this, user_uploadNotes.class));
-                            uploadDialog.dismiss(); // Dismiss the dialog after starting the new activity
-                        }
-                    });
-
-                    uploadVideo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Handle the click for uploading video
-                            // You can open a new dialog, perform an action, or navigate to another screen
-                            // For example, you can show a Toast message for demonstration purposes
-                            Toast.makeText(admin_DashboardAdminActivity.this, "Upload Video Clicked", Toast.LENGTH_SHORT).show();
-                            uploadDialog.dismiss(); // Dismiss the dialog after handling the click
-                        }
-                    });
-
-                    uploadDialog.show();
-                    return true;
-                } else if (item.getItemId() == R.id.calender) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, calendarFragment).commit();
+                } else if (item.getItemId() == R.id.solved) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, solvedFragment).commit();
                     return true;
                 } else if (item.getItemId() == R.id.user) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, profileFragment).commit();
@@ -131,14 +102,6 @@ public class admin_DashboardAdminActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        binding.ReportsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(admin_DashboardAdminActivity.this, admin_reports.class));
-            }
-        });
-
 
     }
     private void checkUser() {

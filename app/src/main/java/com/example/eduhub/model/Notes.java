@@ -14,11 +14,13 @@ public class Notes {
     Timestamp resource_upload_datetime;
     String user_id;
 
+    Boolean is_deleted;
+
     //constructor
     public Notes() {
     }
 
-    public Notes(String notes_id, String category_id, String resource_description, String resource_file, int resource_likes, String resource_name, Timestamp resource_upload_datetime, String user_id) {
+    public Notes(String notes_id, String category_id, String resource_description, String resource_file, int resource_likes, String resource_name, Timestamp resource_upload_datetime, String user_id, Boolean is_deleted) {
         this.notes_id = notes_id;
         this.category_id = category_id;
         this.resource_description = resource_description;
@@ -27,9 +29,10 @@ public class Notes {
         this.resource_name = resource_name;
         this.resource_upload_datetime = resource_upload_datetime;
         this.user_id = user_id;
+        this.is_deleted = is_deleted;
     }
 
-    public Notes(String notes_id, String category_id, String resource_description, String resource_file, int resource_likes, int resource_views, int resource_downloads, String resource_name, Timestamp resource_upload_datetime, String user_id) {
+    public Notes(String notes_id, String category_id, String resource_description, String resource_file, int resource_likes, int resource_views, int resource_downloads, String resource_name, Timestamp resource_upload_datetime, String user_id, Boolean is_deleted) {
         this.notes_id = notes_id;
         this.category_id = category_id;
         this.resource_description = resource_description;
@@ -40,6 +43,7 @@ public class Notes {
         this.resource_name = resource_name;
         this.resource_upload_datetime = resource_upload_datetime;
         this.user_id = user_id;
+        this.is_deleted = is_deleted;
     }
 
     public String getNotes_id() {
@@ -120,5 +124,13 @@ public class Notes {
 
     public void setResource_downloads(int resource_downloads) {
         this.resource_downloads = resource_downloads;
+    }
+
+    public Boolean getIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(Boolean is_deleted) {
+        this.is_deleted = is_deleted;
     }
 }
