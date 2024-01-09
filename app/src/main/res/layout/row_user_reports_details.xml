@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:background="@drawable/rectangle_2"
     app:cardCornerRadius="10dp"
@@ -22,57 +22,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Report "
-                android:textSize="23sp"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-condensed-medium"/>
-
-            <TextView
-                android:id="@+id/numberOfReportDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:textSize="23sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/rpByDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_below="@id/rpByNo"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="reported on "
-                android:textColor="@color/dark_grey"
-                android:textSize="12sp"
-                android:textStyle="normal"/>
-
-            <TextView
-                android:id="@+id/reportedDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10/12/2022"
-                android:textColor="@color/dark_grey"
-                android:textSize="12sp"
-                android:textStyle="normal"/>
-        </LinearLayout>
+            android:layout_marginTop="10dp"/>
 
         <LinearLayout
             android:id="@+id/rpByProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/rpByDate"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp">
 
@@ -86,42 +41,102 @@
                 android:src="@drawable/baseline_person_2_24"
                 app:shapeAppearanceOverlay="@style/styleCircleImage"
                 app:strokeColor="@color/dark_grey"
-                app:strokeWidth="1dp"></com.google.android.material.imageview.ShapeableImageView>
+                app:strokeWidth="1dp" />
+
             <TextView
-                android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name Of Reporter"
-                android:textSize="18sp"
-                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
                 android:fontFamily="sans-serif-condensed-medium"
-                android:layout_marginLeft="10dp"/>
+                android:text="Name Of Reporter"
+                android:id="@+id/reporterTv"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <Button
+                android:id="@+id/solveBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/purple"
+                android:text="Solve"/>
+            <Button
+                android:id="@+id/undoBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_grey"
+                android:text="Undo"
+                android:visibility="gone"
+                />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/reportDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rpByProfile"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:text="bla bla bla"
-            android:textSize="15sp"
-            android:textStyle="normal"/>
-
-        <Button
-            android:id="@+id/solveReportBtn"
+        <LinearLayout
+            android:id="@+id/rpByDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="10dp"
+            android:orientation="horizontal"
+            android:layout_below="@id/rpByProfile"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="Solve" />
+            android:layout_marginLeft="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Report Date: "
+                android:textColor="@color/dark_grey"
+                android:textSize="13sp"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/reportedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10/12/2022"
+                android:textColor="@color/dark_grey"
+                android:textSize="13sp"
+                android:textStyle="normal"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/rpByStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/rpByDate"
+            android:layout_marginTop="1dp"
+            android:layout_marginLeft="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Report Status: "
+                android:textColor="@color/dark_grey"
+                android:textSize="13sp"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/reportedStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:textColor="@color/dark_grey"
+                android:textSize="13sp"
+                android:textStyle="normal"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/reportDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rpByStatus"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="The content is inappropriate."
+            android:textSize="15sp"
+            android:textStyle="normal"/>
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

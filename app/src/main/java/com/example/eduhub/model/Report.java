@@ -1,18 +1,21 @@
 package com.example.eduhub.model;
 
+import com.example.eduhub.R;
 import com.google.firebase.Timestamp;
 
 public class Report {
     String report_id, reportDetails, report_type, resource_id, user_id;
+    Boolean is_solved;
     Timestamp report_timestamp;
 
-    public Report(String report_id, String reportDetails, Timestamp report_timestamp, String resource_id, String user_id) {
+    public Report(String report_id, String reportDetails, Timestamp report_timestamp, String resource_id, String user_id, Boolean is_solved) {
         this.report_id = report_id;
         this.reportDetails = reportDetails;
         this.report_timestamp = report_timestamp;
         this.report_type = "notes";
         this.resource_id = resource_id;
         this.user_id = user_id;
+        this.is_solved = is_solved;
     }
 
     public Report(){
@@ -65,5 +68,13 @@ public class Report {
 
     public void setUser_id(String user_id) {
         this.user_id = user_id;
+    }
+
+    public Boolean getIs_solved() {
+        return is_solved;
+    }
+
+    public void setIs_solved(Boolean is_solved) {
+        this.is_solved = is_solved;
     }
 }

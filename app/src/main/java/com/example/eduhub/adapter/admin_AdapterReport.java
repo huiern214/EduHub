@@ -1,238 +1,213 @@
 package com.example.eduhub.adapter;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
-import static com.example.eduhub.Constants.MAX_BYTES_PDF;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.eduhub.MyApplication;
-import com.example.eduhub.databinding.RowReportsBinding;
-import com.example.eduhub.model.Notes;
+import com.example.eduhub.R;
+import com.example.eduhub.admin_report_details;
 import com.example.eduhub.model.Report;
-import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnErrorListener;
-import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class admin_AdapterReport extends RecyclerView.Adapter<admin_AdapterReport.HolderReport> {
-    public Context context;
-    public ArrayList<Report> reportArrayList;
-    private final String TAG= "REPORT_ADAPTER_TAG";
+    // context
+    private Context context;
 
+    // arraylist to hold reports
+    private ArrayList<Report> reportArrayList;
+    private FirebaseAuth firebaseAuth;
+
+    // constructor
     public admin_AdapterReport(Context context, ArrayList<Report> reportArrayList) {
         this.context = context;
+        this.reportArrayList = reportArrayList;
+        firebaseAuth = FirebaseAuth.getInstance();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setReportArrayList(ArrayList<Report> reportArrayList) {
         this.reportArrayList = reportArrayList;
     }
 
     @NonNull
     @Override
     public HolderReport onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        RowReportsBinding binding = RowReportsBinding.inflate(LayoutInflater.from(context), parent, false);
-        return new HolderReport(binding);
+        // inflate / bind the view xml
+        View itemView = LayoutInflater.from(context).inflate(R.layout.row_user_reports_details, parent, false);
+        return new HolderReport(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull admin_AdapterReport.HolderReport holder, int position) {
-        // get data
-        Report model = reportArrayList.get(position);
-        String resource_id = model.getResource_id();
-        String user_id = model.getUser_id();
+    public void onBindViewHolder(@NonNull HolderReport holder, int position) {
+        // Get data from the specific position of the list and set data
 
-        //Load Note Details
-        loadNoteDetails(resource_id, holder);
-        //load report user name
-        loadReportUser(user_id, holder);
+        // Get data
+        Report modelReport = reportArrayList.get(holder.getAdapterPosition());
+        String reportDetails = modelReport.getReportDetails();
+        Timestamp timestamp = modelReport.getReport_timestamp();
+        String uid = modelReport.getUser_id();
+        if (modelReport.getIs_solved()){
+            holder.statusTv.setText("Solved");
+            holder.solvedBtn.setVisibility(View.GONE);
+            holder.undoBtn.setVisibility(View.VISIBLE);
+        };
 
-        //load timestamp
-        Timestamp timestamp = model.getReport_timestamp();
-        String reportDate = MyApplication.formatTimestamp(timestamp);
-        String reportDescription = model.getReportDetails();
+        // Format date using the MyApplication method
+        String date = MyApplication.formatTimestamp(timestamp);
 
-        // set data
-        holder.reportDateTv.setText(reportDate);
-        holder.reportDescriptionTv.setText(reportDescription);
+        // Set data
+        holder.dateTv.setText(date);
+        holder.detailsTv.setText(reportDetails);
+
+        // Load user details including name and profile image
+        loadUserDetails(uid, holder);
+
+        holder.solvedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setReportStatusForSpecificReport(reportArrayList.get(holder.getAdapterPosition()).getReport_id(), true, holder);
+            }
+        });
+
+        holder.undoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setReportStatusForSpecificReport(reportArrayList.get(holder.getAdapterPosition()).getReport_id(), false, holder);
+            }
+        });
     }
 
-    private void loadReportUser(String userId, HolderReport holder) {
+    private void loadUserDetails(String uid, HolderReport holder) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference userRef = db.collection("user");
+        DocumentReference userRef = db.collection("user").document(uid);
 
-        userRef.document(userId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()){
-                            //Get report user name
-                            String reportName = document.getString("user_name"); //The field is named "user_name"
-                            //Set to report user text view
-                            holder.reportUserTv.setText(reportName);
-                        } else{
-                            //Handle the case where the user document does not exist
-                            Log.d(TAG, "No such user document ");
-                        }
-                    }else{
-                        //Handle errors here
-                        Log.w(TAG, "Error getting user document",task.getException());
-                    }
-                });
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Get data
+                String name = documentSnapshot.getString("user_name");
+                String profileImg = documentSnapshot.getString("user_photo");
+
+                // Set data
+                holder.nameTv.setText(name);
+
+                if (profileImg != null && (profileImg.startsWith("http://") || profileImg.startsWith("https://"))) {
+                    // HTTP/HTTPS URL: Use Glide to load the image from the web
+                    Glide.with(holder.profileIv.getContext())
+                            .load(profileImg)
+                            .placeholder(R.drawable.baseline_person_2_24)
+                            .error(R.drawable.baseline_person_2_24)
+                            .into(holder.profileIv);
+                } else if (profileImg != null && profileImg.startsWith("gs://")) {
+                    // GS URL: Use Firebase Storage to load the image
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(profileImg);
+
+                    // Get the download URL for the file
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String profileImgUrl = uri.toString();
+
+                        // Load the image using Glide
+                        Glide.with(context)
+                                .load(profileImgUrl)
+                                .placeholder(R.drawable.baseline_person_2_24)
+                                .error(R.drawable.baseline_person_2_24)
+                                .into(holder.profileIv);
+                    }).addOnFailureListener(e -> {
+                        // Handle the failure to get the download URL
+                        holder.profileIv.setImageResource(R.drawable.baseline_person_2_24);
+                    });
+                } else {
+                    // Handle unsupported URL format or null URL
+                    holder.profileIv.setImageResource(R.drawable.baseline_person_2_24);
+                }
+            }
+        }).addOnFailureListener(e -> {
+            // Handle the failure to fetch user details
+        });
     }
 
-    private void loadNoteDetails(String resourceId, HolderReport holder) {
+    private void setReportStatusForSpecificReport(String reportId, Boolean set_is_solved, HolderReport holder) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference resourceRef = db.collection("resource");
+        DocumentReference reportRef = db.collection("report").document(reportId);
 
-        resourceRef.document(resourceId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()){
-                            //Get authorName, category, title
-                            String noteTitle = document.getString("resource_name");
-                            String noteCategoryId = Objects.requireNonNull(document.getDocumentReference("category_id")).getId();
-                            String authorUserId = Objects.requireNonNull(document.getDocumentReference("user_id")).getId();
-                            String pdfUrl = document.getString("resource_file");
-
-                            holder.noteTitleTv.setText(noteTitle);
-                            loadNoteCategory(noteCategoryId, holder);
-                            loadAuthor(authorUserId, holder);
-                            loadPdfUrl(pdfUrl, holder);
-
-                        } else{
-                            Log.d(TAG, "No such resource document");
-                        }
-                    }else{
-                        Log.w(TAG, "Error getting resource document",task.getException());
-                    }
-                });
-    }
-
-    private void loadAuthor(String authorUserId, HolderReport holder) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference userRef = db.collection("user");
-
-        userRef.document(authorUserId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()){
-                            //Get author name
-                            String authorName = document.getString("user_name"); //The field is named "user_name"
-                            //Set to author text view
-                            holder.authorTv.setText(authorName);
-                        } else{
-                            //Handle the case where the user document does not exist
-                            Log.d(TAG, "No such user document ");
-                        }
-                    }else{
-                        //Handle errors here
-                        Log.w(TAG, "Error getting user document",task.getException());
-                    }
-                });
-    }
-
-    private void loadNoteCategory(String noteCategoryId, HolderReport holder) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference categoryRef = db.collection("category");
-
-        categoryRef.document(noteCategoryId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()){
-                            //Get category name
-                            String categoryName = document.getString("category_name");
-                            //Set to category text view
-                            holder.categoryTv.setText(categoryName);
-                        } else {
-                            //Handle the case where the category document does not exist
-                            Log.d(TAG, "No such category document");
-                        }
-                    }else{
-                        Log.w(TAG, "Error getting category document", task.getException());
-                    }
-                });
-    }
-
-    private void loadPdfUrl(String pdfUrl, admin_AdapterReport.HolderReport holder) {
-        // Using URL we can get file and its metadata from Firebase Storage
-        StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl);
-        ref.getBytes(MAX_BYTES_PDF)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Log.d(TAG, "onSuccess: successfully got the file");
-                        // Set to pdfView
-                        holder.pdfView.fromBytes(bytes)
-                                .pages(0) // Show only the first page
-                                .spacing(0)
-                                .swipeHorizontal(false)
-                                .enableSwipe(false)
-                                .onError(new OnErrorListener() {
-                                    @Override
-                                    public void onError(Throwable t) {
-                                        Log.e(TAG, "loadPdfUrl:onError", t);
+        // Check if the document exists
+        reportRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Update the 'is_solved' field to true
+                        reportRef.update("is_solved", set_is_solved)
+                                .addOnSuccessListener(aVoid -> {
+                                    // Report status updated successfully
+                                    // You can add your code here to handle the success case
+                                    if (set_is_solved){
+                                        Toast.makeText(this.context, "Solved", Toast.LENGTH_SHORT);
+                                        holder.statusTv.setText("Solved");
+                                        holder.solvedBtn.setVisibility(View.GONE);
+                                        holder.undoBtn.setVisibility(View.VISIBLE);
+                                    } else {
+                                        Toast.makeText(this.context, "Undo", Toast.LENGTH_SHORT);
+                                        holder.statusTv.setText("Pending");
+                                        holder.undoBtn.setVisibility(View.GONE);
+                                        holder.solvedBtn.setVisibility(View.VISIBLE);
                                     }
+
                                 })
-                                .onPageError(new OnPageErrorListener() {
-                                    @Override
-                                    public void onPageError(int page, Throwable t) {
-                                        Log.e(TAG, "loadPdfUrl:onPageError", t);
-                                    }
-                                })
-                                .load();
+                                .addOnFailureListener(e -> {
+                                    // Error handling in case of failure
+                                    Log.w("Firestore", "Error updating report status: ", e);
+                                    // Consider notifying the user or taking appropriate actions
+                                });
+                    } else {
+                        // The report document with the specified ID does not exist
+                        // Handle this case accordingly (e.g., display an error message)
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "loadPdfUrl:onFailure", e);
-                    }
+                .addOnFailureListener(e -> {
+                    // Handle errors gracefully
+                    Log.w("Firestore", "Error retrieving report: ", e);
+                    // Consider notifying the user or taking appropriate actions
                 });
     }
 
     @Override
     public int getItemCount() {
-        return reportArrayList.size();
+        return reportArrayList.size(); // return the size of reports, the number of records
     }
 
-    static class HolderReport extends RecyclerView.ViewHolder {
-        TextView noteTitleTv, authorTv, categoryTv, reportDateTv, reportUserTv, reportDescriptionTv;
-        RowReportsBinding binding;
-        PDFView pdfView;
+    // view holder class for row_user_reports_details.xml
+    public static class HolderReport extends RecyclerView.ViewHolder {
+        ShapeableImageView profileIv;
+        TextView nameTv, dateTv, statusTv, detailsTv;
+        Button solvedBtn, undoBtn;
 
-        public HolderReport(RowReportsBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-            noteTitleTv = binding.titleTv;
-            authorTv = binding.authorNameTv;
-            categoryTv = binding.categoryNameTv;
-            reportUserTv = binding.reportUserTv;
-            reportDateTv = binding.reportDate;
-            reportDescriptionTv = binding.reportDescriptionTv;
-            pdfView = binding.pdfView;
+        public HolderReport(@NonNull View itemView) {
+            super(itemView);
+            // initialize UI views
+            profileIv = itemView.findViewById(R.id.profileImg);
+            nameTv = itemView.findViewById(R.id.reporterTv);
+            dateTv = itemView.findViewById(R.id.reportedDate);
+            statusTv = itemView.findViewById(R.id.reportedStatus);
+            detailsTv = itemView.findViewById(R.id.reportDescription);
+            solvedBtn = itemView.findViewById(R.id.solveBtn);
+            undoBtn = itemView.findViewById(R.id.undoBtn);
         }
     }
 }
