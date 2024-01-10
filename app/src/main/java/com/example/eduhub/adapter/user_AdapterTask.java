@@ -57,6 +57,8 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         holder.taskEvent.setText(task.getTask_title());
         holder.taskDescription.setText(task.getTask_description());
         holder.taskTime.setText(task.getTask_time());
+        holder.taskStatus.setText(task.getTask_status());
+
         taskId = task.getTask_id();
 
         loadDay(task, holder);
@@ -66,6 +68,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     private void loadStatus(Task task, ViewHolder holder) {
+        // Implement your logic to load and display the status
     }
 
     private void loadMonth(Task task, ViewHolder holder) {
@@ -165,7 +168,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                     showSettingPopupMenu(v);
                 }
             });
-
         }
     }
 
@@ -173,5 +175,26 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         PopupMenu popupMenu = new PopupMenu(context, view, Gravity.END);
         popupMenu.getMenuInflater().inflate(R.menu.task_user, popupMenu.getMenu());
         popupMenu.show();  // You need to show the PopupMenu
+
+        // Set an item click listener for the popup menu
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId()== R.id.deleteTask){
+                    // Implement delete task logic
+                } else if(item.getItemId()==R.id.updateTask){
+                    // Implement update task logic
+                } else if (item.getItemId()==R.id.completeTask) {
+                    updateTaskStatus();
+                }
+                return true;
+            }
+        });
+    }
+
+    private void updateTaskStatus() {
+        // Implement your logic to update the status of the task at the given position
+        // You can use taskList.get(position) to get the Task object
+        // Update the status in Firestore or wherever your data is stored
     }
 }
