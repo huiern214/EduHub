@@ -29,6 +29,7 @@ import com.example.eduhub.adapter.user_AdapterTask;
 import com.example.eduhub.databinding.FragmentCalendarBinding;
 import com.example.eduhub.databinding.FragmentHomeBinding;
 import com.example.eduhub.model.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -216,34 +217,40 @@ public class user_calendarFragment extends Fragment {
         progressDialog.show();
 
         String uid = firebaseAuth.getUid();
+        Timestamp timestamp = Timestamp.now();
 
-        //Create document reference for user
+        // Get a reference to the Firestore collection "user"
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("user").document(uid);
 
+        // Get a reference to the "tasks" subcollection within the document
+        CollectionReference taskRef = userRef.collection("tasks");
+
+        // Create new task document with an auto-generated ID
+        DocumentReference newTaskRef = taskRef.document();
+
+        // Setup data to add in task document
         Map<String, Object> taskData = new HashMap<>();
         taskData.put("task_title", taskTitle);
         taskData.put("task_description", taskDesc);
         taskData.put("task_event", taskEvent);
         taskData.put("task_date", taskDate);
         taskData.put("task_time", taskTime);
-        taskData.put("task_user", userRef);
         taskData.put("task_status", "ongoing");
 
-        CollectionReference taskRef = db.collection("task");
-
-        taskRef.add(taskData)
-                .addOnSuccessListener(documentReference -> {
-                    progressDialog.dismiss();
-                    // Document was successfully added, and documentReference now contains the document ID
-                    String taskId = documentReference.getId();
-                    Log.d(TAG, "uploadTaskInfoToDb: Successfully uploaded. Task ID: " + taskId);
-                    Toast.makeText(requireContext(), "Task successfully uploaded", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Log.e(TAG, "uploadTaskInfoToDb: Failed to upload to Firestore due to " + e.getMessage());
-                    Toast.makeText(requireContext(), "Failed to upload task to Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        // Set the data for the new task document
+        newTaskRef.set(taskData)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Task added successfully
+                        Toast.makeText(requireContext(), "Task added successfully", Toast.LENGTH_SHORT).show();
+                        createTaskDialog.dismiss();
+                        progressDialog.dismiss();
+                    } else {
+                        // Failed to add task
+                        progressDialog.dismiss();
+                        Toast.makeText(requireContext(), "Failed to add task due to " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 }
