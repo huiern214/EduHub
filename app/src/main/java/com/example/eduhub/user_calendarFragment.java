@@ -4,14 +4,13 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,14 +26,13 @@ import android.widget.Toast;
 
 import com.example.eduhub.adapter.user_AdapterTask;
 import com.example.eduhub.databinding.FragmentCalendarBinding;
-import com.example.eduhub.databinding.FragmentHomeBinding;
 import com.example.eduhub.model.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +42,7 @@ import java.util.Map;
 
 public class user_calendarFragment extends Fragment {
     private FragmentCalendarBinding binding;
+    private FirebaseFirestore firestore;
     private static final String TAG = "ADD_TASK";
     private Dialog createTaskDialog;
     private Button uploadTaskBtn, addTaskBtn;
@@ -55,6 +54,8 @@ public class user_calendarFragment extends Fragment {
     private ProgressDialog progressDialog;
     private ArrayList<Task> taskList;
     private user_AdapterTask adapterTask;
+    private String user_id;
+    private RecyclerView taskRv;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,7 +63,11 @@ public class user_calendarFragment extends Fragment {
         View view = binding.getRoot();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        //retrieveTaskFromFirestore();
+        user_id = firebaseAuth.getCurrentUser().getUid();
+        taskRv = view.findViewById(R.id.tasksRv);
+        taskRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        //bug
+//        retrieveTaskFromFirestore();
 
         createTaskDialog = new Dialog(requireContext());
         createTaskDialog.setContentView(R.layout.dialog_create_task);
@@ -149,33 +154,55 @@ public class user_calendarFragment extends Fragment {
     }
 
     private void retrieveTaskFromFirestore() {
+        // Initialize the ArrayList before adding data into it
+        taskList = new ArrayList<>();
+
+        // Get a reference to the Firestore collection "user"
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference taskRef = db.collection("task");
+        DocumentReference userDoc = db.collection("user").document(user_id);
+        CollectionReference tasksRef = userDoc.collection("tasks");
 
-        taskRef.get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        taskList.clear();
-                        for (QueryDocumentSnapshot document :task.getResult()){
-                            String task_id = document.getId(); //Get the document Id
-                            String task_title = document.getString("task_title");
-                            String task_description = document.getString("task_description");
-                            String task_event = document.getString("task_event");
-                            String task_time = document.getString("task_time");
-                            String task_date = document.getString("task_date");
-                            String task_user = document.getString("task_user");
-                            String task_status = document.getString("task_status");
+        tasksRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Toast.makeText(requireContext(), "Error loading tasks: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                            Task task1 = new Task(task_id, task_date, task_description, task_event, task_time, task_title, task_user, task_status);
-                            taskList.add(task1);
-                        }
-                        adapterTask.notifyDataSetChanged();;
-                    }else{
-                        //Handle errors here
-                        Log.w(TAG, "Error getting task", task.getException());
-                    }
-                });
-  }
+            // Clear the ArrayList before adding data into it
+            taskList.clear();
+
+            if (value != null) {
+                for (DocumentSnapshot document : value.getDocuments()) {
+                    // Log the data to check if it's correct
+                    Log.d("TaskData", document.getData().toString());
+
+                    // Create a model class to represent the task data
+                    Task taskSet = new Task(document.getId(),
+                            user_id,
+                            document.getString("task_date"),
+                            document.getString("task_description"),
+                            document.getString("task_status"),
+                            document.getString("task_time"),
+                            document.getString("task_title"),
+                            document.getString("task_event"));
+
+                    // Add the task model to the ArrayList
+                    taskList.add(taskSet);
+                }
+
+                // Ensure that adapterTask is initialized before using it
+                if (adapterTask == null) {
+                    adapterTask = new user_AdapterTask(requireContext(), taskList);
+                    // Set the adapter to your RecyclerView
+                    taskRv.setAdapter(adapterTask);
+                }
+
+                // Notify the adapter that the data has changed
+                adapterTask.setTaskArrayList(taskList);
+                adapterTask.notifyDataSetChanged();
+            }
+        });
+    }
 
     private void validateData() {
         //Step 1: Validate data

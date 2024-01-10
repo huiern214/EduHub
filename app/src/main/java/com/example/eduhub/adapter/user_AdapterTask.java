@@ -135,7 +135,11 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
 
     @Override
     public int getItemCount() {
-        return 0;
+        return taskList.size();
+    }
+
+    public void setTaskArrayList(ArrayList<Task> taskList) {
+        this.taskList = taskList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
