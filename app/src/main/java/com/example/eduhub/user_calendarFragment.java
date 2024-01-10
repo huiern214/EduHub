@@ -25,13 +25,17 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.eduhub.adapter.user_AdapterTask;
 import com.example.eduhub.databinding.FragmentCalendarBinding;
 import com.example.eduhub.databinding.FragmentHomeBinding;
+import com.example.eduhub.model.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -48,13 +52,16 @@ public class user_calendarFragment extends Fragment {
     private String taskTitle, taskDesc, taskEvent;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
+    private ArrayList<Task> taskList;
+    private user_AdapterTask adapterTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCalendarBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
-
         firebaseAuth = FirebaseAuth.getInstance();
+
+        //retrieveTaskFromFirestore();
 
         createTaskDialog = new Dialog(requireContext());
         createTaskDialog.setContentView(R.layout.dialog_create_task);
@@ -136,8 +143,38 @@ public class user_calendarFragment extends Fragment {
                 });
             }
         });
+
         return view;
     }
+
+    private void retrieveTaskFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference taskRef = db.collection("task");
+
+        taskRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        taskList.clear();
+                        for (QueryDocumentSnapshot document :task.getResult()){
+                            String task_id = document.getId(); //Get the document Id
+                            String task_title = document.getString("task_title");
+                            String task_description = document.getString("task_description");
+                            String task_event = document.getString("task_event");
+                            String task_time = document.getString("task_time");
+                            String task_date = document.getString("task_date");
+                            String task_user = document.getString("task_user");
+                            String task_status = document.getString("task_status");
+
+                            Task task1 = new Task(task_id, task_date, task_description, task_event, task_time, task_title, task_user, task_status);
+                            taskList.add(task1);
+                        }
+                        adapterTask.notifyDataSetChanged();;
+                    }else{
+                        //Handle errors here
+                        Log.w(TAG, "Error getting task", task.getException());
+                    }
+                });
+  }
 
     private void validateData() {
         //Step 1: Validate data
@@ -191,6 +228,7 @@ public class user_calendarFragment extends Fragment {
         taskData.put("task_date", taskDate);
         taskData.put("task_time", taskTime);
         taskData.put("task_user", userRef);
+        taskData.put("task_status", "ongoing");
 
         CollectionReference taskRef = db.collection("task");
 
