@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -25,7 +27,10 @@ public class user_profileFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firestore;
     private TextView usernameTextView, emailTextView, accountTextView, joinedTextView, postsTextView;
+    private Button btnFragmentPosts, btnFragmentFavourite, btnFragmentLikes;
+    private LinearLayout btnLinearLayout;
     private ShapeableImageView profilePicIv;
+    private String role = "user";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,16 +47,15 @@ public class user_profileFragment extends Fragment {
         joinedTextView = view.findViewById(R.id.joinedTextView);
         postsTextView = view.findViewById(R.id.postsTextView);
         profilePicIv = view.findViewById(R.id.profile_pic);
+        btnLinearLayout = view.findViewById(R.id.buttonLinearLayout);
+
+        // Fragment
+        btnFragmentPosts = view.findViewById(R.id.btnFragmentPosts);
+        btnFragmentFavourite = view.findViewById(R.id.btnFragmentFavourite);
+        btnFragmentLikes = view.findViewById(R.id.btnFragmentLike);
 
         // Load user profile data
         loadUserProfile();
-
-        // Fragment
-        Button btnFragmentPosts = view.findViewById(R.id.btnFragmentPosts);
-        Button btnFragmentFavourite = view.findViewById(R.id.btnFragmentFavourite);
-        Button btnFragmentLikes = view.findViewById(R.id.btnFragmentLike);
-
-        loadFragment(new user_profileFragment_Posts());
 
         btnFragmentPosts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,12 +107,15 @@ public class user_profileFragment extends Fragment {
                     // Set username and email
                     usernameTextView.setText(username);
                     emailTextView.setText(email);
-
+                    role = userType;
                     // Set account type based on userType
                     if ("user".equals(userType)) {
                         accountTextView.setText("User");
+                        loadFragment(new user_profileFragment_Posts());
                     } else if ("admin".equals(userType)) {
                         accountTextView.setText("Admin");
+                        btnFragmentPosts.setVisibility(View.GONE);
+                        loadFragment(new user_profileFragment_Favourite());
                     }
 
                     // Set joined date
@@ -154,7 +161,7 @@ public class user_profileFragment extends Fragment {
     private void countUserPosts(String userId) {
         CollectionReference resourceRef = firestore.collection("resource");
         DocumentReference userRef = firestore.collection("user").document(userId);
-        resourceRef.whereEqualTo("user_id", userRef)
+        resourceRef.whereEqualTo("user_id", userRef).whereEqualTo("is_deleted", false)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     int postCount = queryDocumentSnapshots.size();
@@ -163,5 +170,12 @@ public class user_profileFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     // Handle error
                 });
+    }
+
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (role.equals("admin")){
+            btnLinearLayout.setWeightSum(2);
+        }
     }
 }

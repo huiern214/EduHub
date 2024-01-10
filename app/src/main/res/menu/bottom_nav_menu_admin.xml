@@ -9,21 +9,15 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/shorts"
-        android:icon="@drawable/video"
-        android:title="Shorts"
+        android:id="@+id/report"
+        android:icon="@drawable/material_symbols_flag_outline"
+        android:title="Report"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/upload"
-        android:icon="@drawable/add"
-        android:title="Upload"
-        app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/calender"
-        android:icon="@drawable/calender"
-        android:title="Task"
+        android:id="@+id/solved"
+        android:icon="@drawable/note"
+        android:title="Solved"
         app:showAsAction="ifRoom"/>
 
     <item

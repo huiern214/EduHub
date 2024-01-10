@@ -23,7 +23,7 @@
             android:name=".admin_report_details"
             android:exported="false" />
         <activity
-            android:name=".admin_reports"
+            android:name=".admin_solvedFragment"
             android:exported="false" />
         <activity
             android:name=".user_edit_notes"

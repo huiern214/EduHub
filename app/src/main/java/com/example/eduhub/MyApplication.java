@@ -5,18 +5,25 @@ import android.content.Context;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 //application runs before launcher activity
 public class MyApplication extends Application {
@@ -74,8 +81,6 @@ public class MyApplication extends Application {
                 Toast.makeText(context, "Failed to add to favourite due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
     }
-    
-
     public static void removeFromFavouriteNote(Context context, String noteId){
         //we can remove only if user is logged in
         //1) Check if user is logged in
@@ -106,7 +111,6 @@ public class MyApplication extends Application {
                 Toast.makeText(context, "Failed to remove from favourite due to " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
     }
-    
 
     //Like function
     // Add note to liked notes
@@ -150,7 +154,6 @@ public class MyApplication extends Application {
                 });
 
     }
-
     // Unlike function
     // Remove note from liked notes
     public static void removeFromLikeNote(Context context, String noteId) {
@@ -193,4 +196,140 @@ public class MyApplication extends Application {
                 });
     }
 
+    public static void deleteNote(Context context, String noteId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Reference to the note document in the "resource" collection
+        DocumentReference noteRef = firestore.collection("resource").document(noteId);
+
+        // Delete the document
+        noteRef.update("is_deleted", true)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Successfully deleted the note
+                        // You can perform any additional actions here if needed
+                        Toast.makeText(context, "Note deleted successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while deleting the note
+                        Toast.makeText(context, "Failed to delete note: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public static void removeReferenceFromUserLikes(String noteId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Query the "user" collection to find documents with references to the note
+        firestore.collection("user")
+                .whereArrayContains("like_notes", firestore.collection("resource").document(noteId))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Get the user document
+                            DocumentReference userRef = firestore.collection("user").document(document.getId());
+
+                            // Remove the reference from the "like_notes" field
+                            userRef.update("like_notes", FieldValue.arrayRemove(firestore.collection("resource").document(noteId)))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Successfully removed the reference from the user's "like_notes"
+                                            // You can perform any additional actions here if needed
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle any errors that occurred while updating the "like_notes" field
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while querying the "user" collection
+                    }
+                });
+    }
+
+    public static void removeReferenceFromUserFavourite(String noteId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Query the "user" collection to find documents with references to the note
+        firestore.collection("user")
+                .whereArrayContains("favourite_notes", firestore.collection("resource").document(noteId))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Get the user document
+                            DocumentReference userRef = firestore.collection("user").document(document.getId());
+
+                            // Remove the reference from the "like_notes" field
+                            userRef.update("favourite_notes", FieldValue.arrayRemove(firestore.collection("resource").document(noteId)))
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Successfully removed the reference from the user's "like_notes"
+                                            // You can perform any additional actions here if needed
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle any errors that occurred while updating the "like_notes" field
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while querying the "user" collection
+                    }
+                });
+    }
+
+    public static void deleteProfile(Context context, String userId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Reference to the user document in the "resource" collection
+        DocumentReference userRef = firestore.collection("user").document(userId);
+
+        // Setup data to update (change the fields you want to update)
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("user_name", "Deleted User");
+        userUpdates.put("user_email", "");
+        userUpdates.put("user_photo", ""); // Include the updated category reference
+        userUpdates.put("user_type", "deleted_user");
+
+        // Delete the document
+        userRef.update(userUpdates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Successfully deleted the note
+                        // You can perform any additional actions here if needed
+                        Toast.makeText(context, "User account deleted successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle any errors that occurred while deleting the note
+                        Toast.makeText(context, "Failed to delete user account: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

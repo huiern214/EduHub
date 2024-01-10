@@ -44,7 +44,7 @@
         <TextView
             android:id="@+id/titleTv"
             style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:layout_width="180dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
             android:text="Note title"
@@ -59,17 +59,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:orientation="horizontal"
-            android:layout_marginRight="3dp">
-
-            <Button
-                android:id="@+id/solveReportBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:text="Solve" />
-
-        </LinearLayout>
+            android:layout_marginRight="3dp"/>
 
         <!--Author Name-->
         <LinearLayout
@@ -146,15 +136,15 @@
                 android:textColor="@color/dark_grey"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Report user"/>
+                android:text="Total cases"/>
 
             <TextView
-                android:id="@+id/reportUserTv"
+                android:id="@+id/totalReportCases"
                 style="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/dark_grey"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Xiao Ming"/>
+                android:text="1"
+                android:textColor="@color/dark_grey" />
 
         </LinearLayout>
 
@@ -175,15 +165,15 @@
                 android:textColor="@color/dark_grey"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Report Date"/>
+                android:text="Pending cases"/>
 
             <TextView
-                android:id="@+id/reportDate"
+                android:id="@+id/pendingReportCases"
                 style="@style/TextAppearance.MaterialComponents.Body2"
                 android:textColor="@color/dark_grey"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="100"/>
+                android:text="1"/>
 
         </LinearLayout>
 
@@ -195,19 +185,13 @@
             android:layout_below="@id/viewsLinearLayout"
             android:background="@color/white_grey"
             android:layout_margin="8dp">
-
             <TextView
-                android:id="@+id/reportDescriptionTv"
-                android:layout_width="match_parent"
+                android:id="@+id/isDeletedTv"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/viewsLinearLayout"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:text="The worst note ever, the content is inappropriate."
-                android:textSize="16sp"
-                android:textStyle="normal" />
+                android:visibility="gone"
+                android:text="The content has been deleted."
+            />
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
