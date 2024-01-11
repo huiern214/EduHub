@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.eduhub.adapter.admin_AdapterReportedNotes;
 import com.example.eduhub.adapter.user_AdapterTask;
 import com.example.eduhub.databinding.FragmentCalendarBinding;
 import com.example.eduhub.model.Task;
@@ -66,8 +67,10 @@ public class user_calendarFragment extends Fragment {
         user_id = firebaseAuth.getCurrentUser().getUid();
         taskRv = view.findViewById(R.id.tasksRv);
         taskRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //bug
-//        retrieveTaskFromFirestore();
+        taskList = new ArrayList<>();
+        adapterTask = new user_AdapterTask(getContext(), taskList);
+        taskRv.setAdapter(adapterTask);
+        retrieveTaskFromFirestore();
 
         createTaskDialog = new Dialog(requireContext());
         createTaskDialog.setContentView(R.layout.dialog_create_task);
@@ -178,23 +181,14 @@ public class user_calendarFragment extends Fragment {
 
                     // Create a model class to represent the task data
                     Task taskSet = new Task(document.getId(),
-                            user_id,
                             document.getString("task_date"),
                             document.getString("task_description"),
-                            document.getString("task_status"),
+                            document.getString("task_event"),
                             document.getString("task_time"),
                             document.getString("task_title"),
-                            document.getString("task_event"));
-
-                    // Add the task model to the ArrayList
+                            user_id,
+                            document.getString("task_status"));
                     taskList.add(taskSet);
-                }
-
-                // Ensure that adapterTask is initialized before using it
-                if (adapterTask == null) {
-                    adapterTask = new user_AdapterTask(requireContext(), taskList);
-                    // Set the adapter to your RecyclerView
-                    taskRv.setAdapter(adapterTask);
                 }
 
                 // Notify the adapter that the data has changed

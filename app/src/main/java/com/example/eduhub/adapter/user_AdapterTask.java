@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -54,11 +55,9 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Task task = taskList.get(position);
 
-        holder.taskEvent.setText(task.getTask_title());
+        holder.taskTitle.setText(task.getTask_title());
         holder.taskDescription.setText(task.getTask_description());
         holder.taskTime.setText(task.getTask_time());
-        holder.taskStatus.setText(task.getTask_status());
-
         taskId = task.getTask_id();
 
         loadDay(task, holder);
@@ -68,7 +67,11 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     private void loadStatus(Task task, ViewHolder holder) {
-        // Implement your logic to load and display the status
+        if (task.getTask_status().equals("ongoing")){
+            holder.taskStatus.setText("ONGOING");
+        } else {
+            holder.taskStatus.setText("COMPLETED");
+        }
     }
 
     private void loadMonth(Task task, ViewHolder holder) {
@@ -129,7 +132,8 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             return; //Handle missing error as needed
         }
         //Format the date to get the day of the week
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        assert date != null;
         String datOfWeek = dayFormat.format(date);
 
         //Set the day of the week in ViewHolder
@@ -146,8 +150,8 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView taskTitle, taskDescription, taskEvent, taskDate, taskDay, taskMonth,  taskTime, taskStatus;
-        private ImageButton optionsBtn;
+        private TextView taskTitle, taskDescription, taskDate, taskDay, taskMonth,  taskTime, taskStatus;
+        private ImageView optionsBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -168,6 +172,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                     showSettingPopupMenu(v);
                 }
             });
+
         }
     }
 
@@ -175,26 +180,5 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         PopupMenu popupMenu = new PopupMenu(context, view, Gravity.END);
         popupMenu.getMenuInflater().inflate(R.menu.task_user, popupMenu.getMenu());
         popupMenu.show();  // You need to show the PopupMenu
-
-        // Set an item click listener for the popup menu
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId()== R.id.deleteTask){
-                    // Implement delete task logic
-                } else if(item.getItemId()==R.id.updateTask){
-                    // Implement update task logic
-                } else if (item.getItemId()==R.id.completeTask) {
-                    updateTaskStatus();
-                }
-                return true;
-            }
-        });
-    }
-
-    private void updateTaskStatus() {
-        // Implement your logic to update the status of the task at the given position
-        // You can use taskList.get(position) to get the Task object
-        // Update the status in Firestore or wherever your data is stored
     }
 }
