@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -54,7 +55,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Task task = taskList.get(position);
 
-        holder.taskEvent.setText(task.getTask_title());
+        holder.taskTitle.setText(task.getTask_title());
         holder.taskDescription.setText(task.getTask_description());
         holder.taskTime.setText(task.getTask_time());
         taskId = task.getTask_id();
@@ -66,6 +67,11 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     private void loadStatus(Task task, ViewHolder holder) {
+        if (task.getTask_status().equals("ongoing")){
+            holder.taskStatus.setText("ONGOING");
+        } else {
+            holder.taskStatus.setText("COMPLETED");
+        }
     }
 
     private void loadMonth(Task task, ViewHolder holder) {
@@ -126,7 +132,8 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             return; //Handle missing error as needed
         }
         //Format the date to get the day of the week
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        assert date != null;
         String datOfWeek = dayFormat.format(date);
 
         //Set the day of the week in ViewHolder
@@ -143,8 +150,8 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView taskTitle, taskDescription, taskEvent, taskDate, taskDay, taskMonth,  taskTime, taskStatus;
-        private ImageButton optionsBtn;
+        private TextView taskTitle, taskDescription, taskDate, taskDay, taskMonth,  taskTime, taskStatus;
+        private ImageView optionsBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
