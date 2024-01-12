@@ -11,31 +11,37 @@
         android:id="@+id/calender_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp">
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp">
+
         <TextView
             android:id="@+id/helloTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello"
             android:fontFamily="sans-serif-condensed-medium"
-            android:textSize="23sp"
-            android:textColor="#2979FF"/>
+            android:text="Hello"
+            android:textColor="#2979FF"
+            android:textSize="23sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="All tasks"
             android:layout_below="@+id/helloTv"
-            android:textSize="40sp"
-            android:textStyle="bold"
             android:fontFamily="sans-serif-condensed-medium"
-            android:textColor="#304FFE"/>
+            android:text="All tasks"
+            android:textColor="#304FFE"
+            android:textSize="40sp"
+            android:textStyle="bold" />
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:src="@mipmap/ic_calenderpic_round"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/calendarView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/ic_calenderpic_round" />
 
     </RelativeLayout>
 

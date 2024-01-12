@@ -49,7 +49,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     String taskId;
     private Dialog updateTaskDialog;
     private EditText updateTaskTitleEt, updateTaskDescriptionEt, updateTaskDateEt, updateTaskTimeEt, updateTaskEventEt;
-    private ImageButton calenderPickerBtn, timePickerBtn;
 
     public user_AdapterTask(Context context, ArrayList<Task> taskList) {
         this.context = context;

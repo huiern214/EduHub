@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class user_calendarFragment extends Fragment {
     private FragmentCalendarBinding binding;
     private FirebaseFirestore firestore;
@@ -59,6 +61,7 @@ public class user_calendarFragment extends Fragment {
     private user_AdapterTask adapterTask;
     private String user_id;
     private RecyclerView taskRv;
+    private CircleImageView calendarView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -160,6 +163,14 @@ public class user_calendarFragment extends Fragment {
             }
         });
 
+        //CalendarView button for future usage
+//        calendarView = view.findViewById(R.id.calendarView);
+//        calendarView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(requireContext(), "testing", Toast.LENGTH_SHORT).show();
+//            }
+//        });
         return view;
     }
 
@@ -198,11 +209,17 @@ public class user_calendarFragment extends Fragment {
                     taskList.add(taskSet);
                 }
 
-                // Sort the taskList based on date and time
+                // Sort the taskList based on status, date, and time
                 Collections.sort(taskList, new Comparator<Task>() {
                     @Override
                     public int compare(Task task1, Task task2) {
-                        // Compare dates first
+                        // Compare statuses first (priority: ongoing > completed)
+                        int statusComparison = task2.getTask_status().compareTo(task1.getTask_status());
+                        if (statusComparison != 0) {
+                            return statusComparison;
+                        }
+
+                        // If statuses are equal, compare dates
                         int dateComparison = task1.getTask_date().compareTo(task2.getTask_date());
                         if (dateComparison != 0) {
                             return dateComparison;
@@ -296,4 +313,5 @@ public class user_calendarFragment extends Fragment {
                     }
                 });
     }
+
 }
