@@ -1,15 +1,24 @@
 package com.example.eduhub.adapter;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,8 +35,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.ViewHolder> {
     private Context context;
@@ -35,8 +47,11 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     private static final String TAG = "TASK_ADAPTER_TAG";
     private FirebaseAuth firebaseAuth;
     String taskId;
+    private Dialog updateTaskDialog;
+    private EditText updateTaskTitleEt, updateTaskDescriptionEt, updateTaskDateEt, updateTaskTimeEt, updateTaskEventEt;
+    private ImageButton calenderPickerBtn, timePickerBtn;
 
-    public user_AdapterTask(Context context, ArrayList<Task> taskList){
+    public user_AdapterTask(Context context, ArrayList<Task> taskList) {
         this.context = context;
         this.taskList = taskList;
         this.firebaseAuth = FirebaseAuth.getInstance();
@@ -47,7 +62,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_task, parent, false);
         firebaseAuth = firebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser()!= null){
+        if (firebaseAuth.getCurrentUser() != null) {
             //Initialize taskId when creating the view holder
             taskId = taskList.get(viewType).getTask_id();
             ViewHolder viewHolder = new ViewHolder(view);
@@ -72,7 +87,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     private void loadStatus(Task task, ViewHolder holder) {
-        if (task.getTask_status().equals("ongoing")){
+        if (task.getTask_status().equals("ongoing")) {
             holder.taskStatus.setText("ONGOING");
         } else {
             holder.taskStatus.setText("COMPLETED");
@@ -86,15 +101,15 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         //Parse the date string to a Date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date;
-        try{
+        try {
             date = dateFormat.parse(dateString);
-        } catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
             return; //Handle parsing error as needed
         }
 
         //Format the month to get only the month part
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM",Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM", Locale.getDefault());
         String monthShort = monthFormat.format(date);
 
         //Set the month in ViewHolder
@@ -108,15 +123,15 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         //Parse the date string to a Date object
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date;
-        try{
+        try {
             date = dateFormat.parse(dateString);
-        } catch (ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
             return; //Handle parsing error as needed
         }
 
         //Format the date to only the day part
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd",Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
         String dayOfMonth = dayFormat.format(date);
 
         //Set the day of the month in your ViewHolder
@@ -130,9 +145,9 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         //Parse the date string to a Date object
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date;
-        try{
+        try {
             date = dateFormat.parse(dateString);
-        } catch(ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
             return; //Handle missing error as needed
         }
@@ -155,8 +170,9 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView taskTitle, taskDescription, taskDate, taskDay, taskMonth,  taskTime, taskStatus;
+        private TextView taskTitle, taskDescription, taskDate, taskDay, taskMonth, taskTime, taskStatus;
         private ImageView optionsBtn;
+        private Button uploadTaskBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -171,13 +187,23 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             optionsBtn = itemView.findViewById(R.id.optionsBtn);
             taskStatus = itemView.findViewById(R.id.taskStatus);
 
+            // Initialize updateTaskDialog only once
+            updateTaskDialog = new Dialog(context);
+            updateTaskDialog.setContentView(R.layout.dialog_update_task);
+            updateTaskDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            updateTaskTitleEt = updateTaskDialog.findViewById(R.id.updateTaskTitleEt);
+            updateTaskDescriptionEt = updateTaskDialog.findViewById(R.id.updateTaskDescriptionEt);
+            updateTaskDateEt = updateTaskDialog.findViewById(R.id.updateTaskDateEt);
+            updateTaskTimeEt = updateTaskDialog.findViewById(R.id.updateTaskTimeEt);
+            updateTaskEventEt = updateTaskDialog.findViewById(R.id.updateTaskEventEt);
+            uploadTaskBtn = updateTaskDialog.findViewById(R.id.updateTaskBtn);
+
             optionsBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     showSettingPopupMenu(v, getAdapterPosition());
                 }
             });
-
         }
     }
 
@@ -187,13 +213,53 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                //Handle item clicks here
-                if (item.getItemId() == R.id.completeTask){
-                    //Toast.makeText(context, "Completed Task", Toast.LENGTH_SHORT).show();
-                    //Update the status of the task to "completed" in FirebaseFirestore 
+                // Handle item clicks here
+                if (item.getItemId() == R.id.completeTask) {
+                    // Toast.makeText(context, "Completed Task", Toast.LENGTH_SHORT).show();
+                    // Update the status of the task to "completed" in FirebaseFirestore
                     updateTaskStatus(position, "completed");
                 } else if (item.getItemId() == R.id.updateTask) {
-                    Toast.makeText(context, "Update Task", Toast.LENGTH_SHORT).show();
+                    // Retrieve the task at the specified position
+                    Task task = taskList.get(position);
+
+                    // Set the data in the updateTaskDialog
+                    updateTaskTitleEt.setText(task.getTask_title());
+                    updateTaskDescriptionEt.setText(task.getTask_description());
+                    updateTaskDateEt.setText(task.getTask_date());
+                    updateTaskTimeEt.setText(task.getTask_time());
+                    updateTaskEventEt.setText(task.getTask_event());
+
+                    // Set the date and time pickers (same as before)
+
+                    // Show the updateTaskDialog for updating task details
+                    updateTaskDialog.show();
+
+                    // Close the updateTaskDialog
+                    updateTaskDialog.findViewById(R.id.closeBtn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            updateTaskDialog.dismiss();
+                        }
+                    });
+
+                    // Update task in FirebaseFirestore
+                    updateTaskDialog.findViewById(R.id.updateTaskBtn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Fetch the updated values from the EditText fields
+                            String updatedTitle = updateTaskTitleEt.getText().toString();
+                            String updatedDescription = updateTaskDescriptionEt.getText().toString();
+                            String updatedDate = updateTaskDateEt.getText().toString();
+                            String updatedTime = updateTaskTimeEt.getText().toString();
+                            String updatedEvent = updateTaskEventEt.getText().toString();
+
+                            // Call the update function
+                            updateTaskDetails(position, updatedTitle, updatedDescription, updatedDate, updatedTime, updatedEvent);
+
+                            // Close the updateTaskDialog
+                            updateTaskDialog.dismiss();
+                        }
+                    });
                 } else if (item.getItemId() == R.id.deleteTask) {
                     Toast.makeText(context, "Delete Task", Toast.LENGTH_SHORT).show();
                 }
@@ -203,16 +269,61 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         popupMenu.show();  // You need to show the PopupMenu
     }
 
-    private void updateTaskStatus(int position, String completedStatus) {
-        //Ensure that the position is valid
-        if (position >=0 && position <taskList.size()){
-            //Get the task at the specified position
+    private void updateTaskDetails(int position, String updatedTitle, String updatedDescription, String updatedDate, String updatedTime, String updatedEvent) {
+        if (position>=0 && position<taskList.size()){
             Task task = taskList.get(position);
 
-            //Update the task status in the local list
+            //Update the task details in the local list
+            task.setTask_title(updatedTitle);
+            task.setTask_description(updatedDescription);
+            task.setTask_date(updatedDate);
+            task.setTask_time(updatedTime);
+            task.setTask_event(updatedEvent);
+
+            //Update the task details in FirestoreFirebase
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference taskRef = db.collection("user")
+                    .document(task.getTask_userId())
+                    .collection("tasks")
+                    .document(task.getTask_id());
+
+            Map<String, Object> updatedData = new HashMap<>();
+            updatedData.put("task_title", updatedTitle);
+            updatedData.put("task_description", updatedDescription);
+            updatedData.put("task_date", updatedDate);
+            updatedData.put("task_time", updatedTime);
+            updatedData.put("task_event", updatedEvent);
+
+            taskRef.update(updatedData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            // Successfully updated the task details in FirebaseFirestore
+                            Toast.makeText(context, "Task details updated", Toast.LENGTH_SHORT).show();
+                            // Notify the adapter that the data has changed
+                            notifyItemChanged(position);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Failed to update the task details
+                            Toast.makeText(context, "Failed to update task details", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    private void updateTaskStatus(int position, String completedStatus) {
+        // Ensure that the position is valid
+        if (position >= 0 && position < taskList.size()) {
+            // Get the task at the specified position
+            Task task = taskList.get(position);
+
+            // Update the task status in the local list
             task.setTask_status(completedStatus);
 
-            //Update the task status in FirebaseFirestore
+            // Update the task status in FirebaseFirestore
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference taskRef = db.collection("user")
                     .document(task.getTask_userId())
@@ -223,16 +334,16 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            //Successfully updated the task status in FirebaseFirestore
-                            Toast.makeText(context, "Task status updated to "+completedStatus, Toast.LENGTH_SHORT).show();
-                            //Notify the adapter that the data has changed
+                            // Successfully updated the task status in FirebaseFirestore
+                            Toast.makeText(context, "Task status updated to " + completedStatus, Toast.LENGTH_SHORT).show();
+                            // Notify the adapter that the data has changed
                             notifyItemChanged(position);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            //Failed to update the task status
+                            // Failed to update the task status
                             Toast.makeText(context, "Failed to update task status", Toast.LENGTH_SHORT).show();
                         }
                     });
