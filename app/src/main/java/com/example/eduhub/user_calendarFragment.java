@@ -37,6 +37,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -195,6 +197,21 @@ public class user_calendarFragment extends Fragment {
                             document.getString("task_status"));
                     taskList.add(taskSet);
                 }
+
+                // Sort the taskList based on date and time
+                Collections.sort(taskList, new Comparator<Task>() {
+                    @Override
+                    public int compare(Task task1, Task task2) {
+                        // Compare dates first
+                        int dateComparison = task1.getTask_date().compareTo(task2.getTask_date());
+                        if (dateComparison != 0) {
+                            return dateComparison;
+                        }
+
+                        // If dates are equal, compare times
+                        return task1.getTask_time().compareTo(task2.getTask_time());
+                    }
+                });
 
                 // Notify the adapter that the data has changed
                 adapterTask.setTaskArrayList(taskList);

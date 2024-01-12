@@ -261,12 +261,53 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                         }
                     });
                 } else if (item.getItemId() == R.id.deleteTask) {
-                    Toast.makeText(context, "Delete Task", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Delete Task", Toast.LENGTH_SHORT).show();
+                    // Delete the task from FirebaseFirestore
+                    deleteTask(position);
                 }
                 return true;
             }
         });
         popupMenu.show();  // You need to show the PopupMenu
+    }
+
+    // Function to delete task from Firestore
+    private void deleteTask(int position) {
+        // Ensure that the position is valid
+        if (position >= 0 && position < taskList.size()) {
+            // Get the task at the specified position
+            Task task = taskList.get(position);
+
+            // Delete the task from FirebaseFirestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference taskRef = db.collection("user")
+                    .document(task.getTask_userId())
+                    .collection("tasks")
+                    .document(task.getTask_id());
+
+            taskRef.delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            // Successfully deleted the task from FirebaseFirestore
+                            Toast.makeText(context, "Task deleted", Toast.LENGTH_SHORT).show();
+
+                            // Remove the task from the local list
+                            taskList.remove(position);
+
+                            // Notify the adapter that the data has changed
+                            //notifyItemRemoved(position);
+                            //notifyItemRangeChanged(position, taskList.size()); // Optional: To update the remaining items
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Failed to delete the task
+                            Toast.makeText(context, "Failed to delete task", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void updateTaskDetails(int position, String updatedTitle, String updatedDescription, String updatedDate, String updatedTime, String updatedEvent) {
