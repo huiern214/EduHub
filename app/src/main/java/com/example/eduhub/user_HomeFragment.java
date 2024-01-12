@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -49,11 +50,17 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
     private ArrayList<Notes> FilteredNoteList;
     private user_AdapterNote noteAdapter;
     private ImageButton selectAllCategoryBtn;
+    private TextView eventTitle, eventTime;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        //Initialize the Task
+        eventTitle = view.findViewById(R.id.event);
+        eventTime = view.findViewById(R.id.eventTime);
+
 
         //Initialize RecyclerView and CategoryAdapter
         recyclerViewCategory = binding.CategoryRecyclerView;
@@ -208,11 +215,9 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                 FilteredNoteList.add(note);
                             }
                         }
-
                         // Set up the adapter and notify data changes
                         noteAdapter.setNoteList(FilteredNoteList);
                         noteAdapter.notifyDataSetChanged();
-
                     } else {
                         // Handle errors here
                         Log.w(TAG, "Error getting notes", task.getException());

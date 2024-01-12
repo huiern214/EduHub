@@ -163,14 +163,6 @@ public class user_calendarFragment extends Fragment {
             }
         });
 
-        //CalendarView button for future usage
-//        calendarView = view.findViewById(R.id.calendarView);
-//        calendarView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(requireContext(), "testing", Toast.LENGTH_SHORT).show();
-//            }
-//        });
         return view;
     }
 
