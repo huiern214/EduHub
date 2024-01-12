@@ -17,7 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eduhub.R;
 import com.example.eduhub.model.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -170,14 +174,14 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             optionsBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showSettingPopupMenu(v);
+                    showSettingPopupMenu(v, getAdapterPosition());
                 }
             });
 
         }
     }
 
-    private void showSettingPopupMenu(View view) {
+    private void showSettingPopupMenu(View view, int position) {
         PopupMenu popupMenu = new PopupMenu(context, view, Gravity.END);
         popupMenu.getMenuInflater().inflate(R.menu.task_user, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -185,7 +189,9 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             public boolean onMenuItemClick(MenuItem item) {
                 //Handle item clicks here
                 if (item.getItemId() == R.id.completeTask){
-                    Toast.makeText(context, "Completed Task", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Completed Task", Toast.LENGTH_SHORT).show();
+                    //Update the status of the task to "completed" in FirebaseFirestore 
+                    updateTaskStatus(position, "completed");
                 } else if (item.getItemId() == R.id.updateTask) {
                     Toast.makeText(context, "Update Task", Toast.LENGTH_SHORT).show();
                 } else if (item.getItemId() == R.id.deleteTask) {
@@ -195,5 +201,41 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             }
         });
         popupMenu.show();  // You need to show the PopupMenu
+    }
+
+    private void updateTaskStatus(int position, String completedStatus) {
+        //Ensure that the position is valid
+        if (position >=0 && position <taskList.size()){
+            //Get the task at the specified position
+            Task task = taskList.get(position);
+
+            //Update the task status in the local list
+            task.setTask_status(completedStatus);
+
+            //Update the task status in FirebaseFirestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference taskRef = db.collection("user")
+                    .document(task.getTask_userId())
+                    .collection("tasks")
+                    .document(task.getTask_id());
+
+            taskRef.update("task_status", completedStatus)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            //Successfully updated the task status in FirebaseFirestore
+                            Toast.makeText(context, "Task status updated to "+completedStatus, Toast.LENGTH_SHORT).show();
+                            //Notify the adapter that the data has changed
+                            notifyItemChanged(position);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //Failed to update the task status
+                            Toast.makeText(context, "Failed to update task status", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 }
