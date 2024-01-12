@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -179,6 +180,20 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     private void showSettingPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(context, view, Gravity.END);
         popupMenu.getMenuInflater().inflate(R.menu.task_user, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //Handle item clicks here
+                if (item.getItemId() == R.id.completeTask){
+                    Toast.makeText(context, "Completed Task", Toast.LENGTH_SHORT).show();
+                } else if (item.getItemId() == R.id.updateTask) {
+                    Toast.makeText(context, "Update Task", Toast.LENGTH_SHORT).show();
+                } else if (item.getItemId() == R.id.deleteTask) {
+                    Toast.makeText(context, "Delete Task", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
         popupMenu.show();  // You need to show the PopupMenu
     }
 }
