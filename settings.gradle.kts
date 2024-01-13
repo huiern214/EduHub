@@ -18,3 +18,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EduHub"
 include(":app")
+include(":app:assets")

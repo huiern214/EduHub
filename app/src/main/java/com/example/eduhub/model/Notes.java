@@ -13,8 +13,9 @@ public class Notes {
     String resource_name;
     Timestamp resource_upload_datetime;
     String user_id;
-
     Boolean is_deleted;
+
+   // Boolean is_deleted;
 
     //constructor
     public Notes() {

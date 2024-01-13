@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,13 +26,17 @@ import com.example.eduhub.adapter.user_AdapterHomeFragmentCategory;
 import com.example.eduhub.databinding.FragmentHomeBinding;
 import com.example.eduhub.model.Category;
 import com.example.eduhub.model.Notes;
+import com.example.eduhub.model.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,12 +54,18 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
     private ArrayList<Notes> FilteredNoteList;
     private user_AdapterNote noteAdapter;
     private ImageButton selectAllCategoryBtn;
+    private TextView eventTitle, eventTime;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        //Initialize the Task
+        eventTitle = view.findViewById(R.id.event);
+        eventTime = view.findViewById(R.id.eventTime);
+        retrieveTaskFromFirestore();
+        
         //Initialize RecyclerView and CategoryAdapter
         recyclerViewCategory = binding.CategoryRecyclerView;
         recyclerViewCategory.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
@@ -75,6 +86,66 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
         retrieveNotesFromFirestore();
         
         return view;
+    }
+
+    private void retrieveTaskFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+// Get a reference to the "tasks" collection for the user
+        CollectionReference tasksRef = db.collection("user").document(userId).collection("tasks");
+
+// Query Firestore to get all tasks
+        tasksRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Task> allTasks = new ArrayList<>();
+
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    // Convert Firestore document to Task object
+                    Task task1 = document.toObject(Task.class);
+                    allTasks.add(task1);
+                }
+
+                // Filter out ongoing tasks
+                List<Task> ongoingTasks = new ArrayList<>();
+                for (Task task1 : allTasks) {
+                    if (task1.getTask_status().equals("ongoing")) {
+                        ongoingTasks.add(task1);
+                    }
+                }
+
+                // Sort ongoing tasks based on date and time
+                Collections.sort(ongoingTasks, new Comparator<Task>() {
+                    @Override
+                    public int compare(Task task1, Task task2) {
+                        // Compare dates first
+                        int dateComparison = task1.getTask_date().compareTo(task2.getTask_date());
+                        if (dateComparison != 0) {
+                            return dateComparison;
+                        }
+
+                        // If dates are equal, compare times
+                        return task1.getTask_time().compareTo(task2.getTask_time());
+                    }
+                });
+
+                // Retrieve the latest ongoing task (if any)
+                if (!ongoingTasks.isEmpty()) {
+                    Task latestOngoingTask = ongoingTasks.get(0);
+                    // Now you have the latest ongoing task, you can use it as needed
+                    // e.g., display it in the UI or perform some other action
+                    Log.d("LatestOngoingTask", latestOngoingTask.getTask_title());
+                    eventTitle.setText(latestOngoingTask.getTask_title());
+                    eventTime.setText(latestOngoingTask.getTask_date()+" "+latestOngoingTask.getTask_time());
+                } else {
+                    // No ongoing tasks
+                    Log.d("LatestOngoingTask", "No ongoing tasks");
+                }
+            } else {
+                Log.e("FirestoreError", "Error getting tasks", task.getException());
+            }
+        });
+
     }
 
     @SuppressLint({"NotifyDataSetChanged", "RestrictedApi"})
@@ -208,11 +279,9 @@ public class user_HomeFragment extends Fragment implements CategoryClickListener
                                 FilteredNoteList.add(note);
                             }
                         }
-
                         // Set up the adapter and notify data changes
                         noteAdapter.setNoteList(FilteredNoteList);
                         noteAdapter.notifyDataSetChanged();
-
                     } else {
                         // Handle errors here
                         Log.w(TAG, "Error getting notes", task.getException());

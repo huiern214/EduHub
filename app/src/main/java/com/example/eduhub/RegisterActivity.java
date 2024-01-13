@@ -150,7 +150,6 @@ public class RegisterActivity extends AppCompatActivity {
             DocumentReference userRef = db.collection("user").document(uid);
 
             Map<String, Object> userData = new HashMap<>();
-            userData.put("uid", uid);
             userData.put("user_email", email);
             userData.put("user_name", name);
             userData.put("user_photo", ""); // Add empty, will do later
