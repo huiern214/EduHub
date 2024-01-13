@@ -35,11 +35,6 @@ public class admin_DashboardAdminActivity extends AppCompatActivity {
     admin_solvedFragment solvedFragment = new admin_solvedFragment();
     user_profileFragment profileFragment = new user_profileFragment();
 
-    //Upload Materials
-    Dialog uploadDialog;
-    Button uploadNote,uploadVideo;
-    Button settingBtn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,15 +44,6 @@ public class admin_DashboardAdminActivity extends AppCompatActivity {
         //init firebase auth
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
-
-        //pop up dialog handle
-        uploadDialog = new Dialog(this);
-        //Inflate the dialog layout
-        uploadDialog.setContentView(R.layout.dialog_upload_materials);
-        //Find views from uploadDialog
-        uploadNote = uploadDialog.findViewById(R.id.uploadNotesBtn);
-        uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
-        uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // Find the "Setting" menu item from the toolbar
         MenuItem settingMenuItem = binding.toolbar.getMenu().findItem(R.id.setting);
