@@ -26,14 +26,6 @@
             android:orientation="vertical"
             android:layout_gravity="center">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/baseline_keyboard_arrow_up_24"
-                android:scaleType="centerCrop" />
-
             <TextView
                 fontPath="fonts/nunito_extra_bold.ttf"
                 android:layout_width="wrap_content"
@@ -125,6 +117,7 @@
                     android:background="@drawable/btn_border"
                     android:padding="10dp"
                     android:id="@+id/updateTaskDateEt"
+                    android:layout_gravity="center_horizontal"
                     tools:ignore="MissingPrefix" />
 
                 <ImageButton
@@ -132,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/baseline_calendar_month_24"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
                     android:background="@android:color/transparent"
                     android:layout_marginLeft="10dp"/>
             </LinearLayout>
@@ -161,6 +154,7 @@
                     android:singleLine="true"
                     android:background="@drawable/btn_border"
                     android:padding="10dp"
+                    android:layout_gravity="center_horizontal"
                     android:id="@+id/updateTaskTimeEt"
                     tools:ignore="MissingPrefix" />
 
@@ -169,32 +163,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/baseline_access_time_24"
-                    android:layout_gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
                     android:background="@android:color/transparent"
                     android:layout_marginLeft="10dp"/>
 
             </LinearLayout>
-
-            <TextView
-                android:layout_marginLeft="3dp"
-                fontPath="fonts/nunito_light.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="Add an event"
-                tools:ignore="MissingPrefix" />
-
-            <EditText
-                android:textSize="14sp"
-                fontPath="fonts/nunito_light.ttf"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:singleLine="true"
-                android:background="@drawable/btn_border"
-                android:padding="10dp"
-                android:id="@+id/updateTaskEventEt"
-                tools:ignore="MissingPrefix" />
 
             <Button
                 android:layout_width="match_parent"

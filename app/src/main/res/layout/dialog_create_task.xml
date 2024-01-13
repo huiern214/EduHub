@@ -175,27 +175,6 @@
 
             </LinearLayout>
 
-            <TextView
-                android:layout_marginLeft="3dp"
-                fontPath="fonts/nunito_light.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:text="Add an event"
-                tools:ignore="MissingPrefix" />
-
-            <EditText
-                android:textSize="14sp"
-                fontPath="fonts/nunito_light.ttf"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:singleLine="true"
-                android:background="@drawable/btn_border"
-                android:padding="10dp"
-                android:id="@+id/addTaskEventEt"
-                tools:ignore="MissingPrefix" />
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

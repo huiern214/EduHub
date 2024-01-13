@@ -48,14 +48,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksRv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="20dp"
         android:layout_below="@+id/calender_header"
+        android:layout_above="@id/addTaskBtnLayout"
         tools:listitem="@layout/row_task" />
 
     <LinearLayout
+        android:id="@+id/addTaskBtnLayout"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

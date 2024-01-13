@@ -25,7 +25,6 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.eduhub.adapter.admin_AdapterReportedNotes;
 import com.example.eduhub.adapter.user_AdapterTask;
 import com.example.eduhub.databinding.FragmentCalendarBinding;
 import com.example.eduhub.model.Task;
@@ -56,9 +55,9 @@ public class user_calendarFragment extends Fragment {
     private Dialog createTaskDialog;
     private Button uploadTaskBtn, addTaskBtn;
     private ImageButton addTaskCloseBtn, calenderPickerBtn, timePickerBtn;
-    private EditText addTaskTitleEt, addTaskDescriptionEt, addTaskDateEt, addTaskTimeEt, addTaskEventEt;
+    private EditText addTaskTitleEt, addTaskDescriptionEt, addTaskDateEt, addTaskTimeEt;
     private String taskDate = "", taskTime ="";
-    private String taskTitle, taskDesc, taskEvent;
+    private String taskTitle, taskDesc;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
     private ArrayList<Task> taskList;
@@ -90,7 +89,6 @@ public class user_calendarFragment extends Fragment {
         addTaskDescriptionEt = createTaskDialog.findViewById(R.id.addTaskDescriptionEt);
         addTaskDateEt = createTaskDialog.findViewById(R.id.addTaskDateEt);
         addTaskTimeEt = createTaskDialog.findViewById(R.id.addTaskTimeEt);
-        addTaskEventEt = createTaskDialog.findViewById(R.id.addTaskEventEt);
         timePickerBtn = createTaskDialog.findViewById(R.id.timePickerBtn);
         calenderPickerBtn = createTaskDialog.findViewById(R.id.calenderPickerBtn);
 
@@ -196,7 +194,6 @@ public class user_calendarFragment extends Fragment {
                     Task taskSet = new Task(document.getId(),
                             document.getString("task_date"),
                             document.getString("task_description"),
-                            document.getString("task_event"),
                             document.getString("task_time"),
                             document.getString("task_title"),
                             user_id,
@@ -238,7 +235,6 @@ public class user_calendarFragment extends Fragment {
 
         taskTitle = addTaskTitleEt.getText().toString();
         taskDesc = addTaskDescriptionEt.getText().toString();
-        taskEvent = addTaskEventEt.getText().toString();
 
         if (TextUtils.isEmpty(taskTitle)) {
             Log.d(TAG, "Task title is empty");
@@ -246,9 +242,6 @@ public class user_calendarFragment extends Fragment {
         } else if (TextUtils.isEmpty(taskDesc)) {
             Log.d(TAG, "Task description is empty");
             Toast.makeText(requireContext(), "Enter task description", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(taskEvent)) {
-            Log.d(TAG, "Task event is empty");
-            Toast.makeText(requireContext(), "Enter task event", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(taskDate)) {
             Log.d(TAG, "Task date is empty");
             Toast.makeText(requireContext(), "Enter task date", Toast.LENGTH_SHORT).show();
@@ -288,7 +281,6 @@ public class user_calendarFragment extends Fragment {
         Map<String, Object> taskData = new HashMap<>();
         taskData.put("task_title", taskTitle);
         taskData.put("task_description", taskDesc);
-        taskData.put("task_event", taskEvent);
         taskData.put("task_date", taskDate);
         taskData.put("task_time", taskTime);
         taskData.put("task_status", "ongoing");

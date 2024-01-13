@@ -48,7 +48,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
     private FirebaseAuth firebaseAuth;
     String taskId;
     private Dialog updateTaskDialog;
-    private EditText updateTaskTitleEt, updateTaskDescriptionEt, updateTaskDateEt, updateTaskTimeEt, updateTaskEventEt;
+    private EditText updateTaskTitleEt, updateTaskDescriptionEt, updateTaskDateEt, updateTaskTimeEt;
 
     public user_AdapterTask(Context context, ArrayList<Task> taskList) {
         this.context = context;
@@ -194,7 +194,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             updateTaskDescriptionEt = updateTaskDialog.findViewById(R.id.updateTaskDescriptionEt);
             updateTaskDateEt = updateTaskDialog.findViewById(R.id.updateTaskDateEt);
             updateTaskTimeEt = updateTaskDialog.findViewById(R.id.updateTaskTimeEt);
-            updateTaskEventEt = updateTaskDialog.findViewById(R.id.updateTaskEventEt);
             uploadTaskBtn = updateTaskDialog.findViewById(R.id.updateTaskBtn);
 
             optionsBtn.setOnClickListener(new View.OnClickListener() {
@@ -226,7 +225,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                     updateTaskDescriptionEt.setText(task.getTask_description());
                     updateTaskDateEt.setText(task.getTask_date());
                     updateTaskTimeEt.setText(task.getTask_time());
-                    updateTaskEventEt.setText(task.getTask_event());
 
                     // Set the date and time pickers (same as before)
 
@@ -250,10 +248,9 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                             String updatedDescription = updateTaskDescriptionEt.getText().toString();
                             String updatedDate = updateTaskDateEt.getText().toString();
                             String updatedTime = updateTaskTimeEt.getText().toString();
-                            String updatedEvent = updateTaskEventEt.getText().toString();
 
                             // Call the update function
-                            updateTaskDetails(position, updatedTitle, updatedDescription, updatedDate, updatedTime, updatedEvent);
+                            updateTaskDetails(position, updatedTitle, updatedDescription, updatedDate, updatedTime);
 
                             // Close the updateTaskDialog
                             updateTaskDialog.dismiss();
@@ -309,7 +306,7 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
         }
     }
 
-    private void updateTaskDetails(int position, String updatedTitle, String updatedDescription, String updatedDate, String updatedTime, String updatedEvent) {
+    private void updateTaskDetails(int position, String updatedTitle, String updatedDescription, String updatedDate, String updatedTime) {
         if (position>=0 && position<taskList.size()){
             Task task = taskList.get(position);
 
@@ -318,7 +315,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             task.setTask_description(updatedDescription);
             task.setTask_date(updatedDate);
             task.setTask_time(updatedTime);
-            task.setTask_event(updatedEvent);
 
             //Update the task details in FirestoreFirebase
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -332,7 +328,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
             updatedData.put("task_description", updatedDescription);
             updatedData.put("task_date", updatedDate);
             updatedData.put("task_time", updatedTime);
-            updatedData.put("task_event", updatedEvent);
 
             taskRef.update(updatedData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

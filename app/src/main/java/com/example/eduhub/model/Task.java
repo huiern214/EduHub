@@ -1,17 +1,16 @@
 package com.example.eduhub.model;
 
 public class Task {
-    String task_id, task_date, task_description, task_event, task_time, task_title, task_userId, task_status;
+    String task_id, task_date, task_description, task_time, task_title, task_userId, task_status;
 
     public Task(){
 
     }
 
-    public Task(String task_id, String task_date, String task_description, String task_event, String task_time, String task_title, String task_userId, String task_status) {
+    public Task(String task_id, String task_date, String task_description, String task_time, String task_title, String task_userId, String task_status) {
         this.task_id = task_id;
         this.task_date = task_date;
         this.task_description = task_description;
-        this.task_event = task_event;
         this.task_time = task_time;
         this.task_title = task_title;
         this.task_userId = task_userId;
@@ -40,14 +39,6 @@ public class Task {
 
     public void setTask_description(String task_description) {
         this.task_description = task_description;
-    }
-
-    public String getTask_event() {
-        return task_event;
-    }
-
-    public void setTask_event(String task_event) {
-        this.task_event = task_event;
     }
 
     public String getTask_time() {
