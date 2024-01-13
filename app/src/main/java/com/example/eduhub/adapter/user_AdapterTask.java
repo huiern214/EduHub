@@ -287,13 +287,6 @@ public class user_AdapterTask extends RecyclerView.Adapter<user_AdapterTask.View
                         public void onSuccess(Void unused) {
                             // Successfully deleted the task from FirebaseFirestore
                             Toast.makeText(context, "Task deleted", Toast.LENGTH_SHORT).show();
-
-                            // Remove the task from the local list
-                            taskList.remove(position);
-
-                            // Notify the adapter that the data has changed
-                            //notifyItemRemoved(position);
-                            //notifyItemRangeChanged(position, taskList.size()); // Optional: To update the remaining items
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
