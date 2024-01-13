@@ -24,25 +24,13 @@
             android:textSize="25sp"
             android:textStyle="bold" />
     </RelativeLayout>
-    <!-- Search -->
-    <LinearLayout android:layout_width="match_parent" android:layout_marginTop="10dp" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:weightSum="3">
-        <androidx.cardview.widget.CardView android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="0dp" android:layout_weight="0.8" android:layout_height="wrap_content" android:layout_gravity="center">
-            <Button android:id="@+id/allBtn" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center" android:text="All" android:textSize="13sp" android:background="@android:color/transparent" android:textColor="#686BFF"/>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.1" android:layout_gravity="center">
-            <Button android:id="@+id/eduShortsBtn" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center" android:background="@android:color/transparent" android:text="EduShorts" android:textColor="#686BFF" android:textSize="13sp"/>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.1" android:layout_gravity="center">
-            <Button android:id="@+id/notesBtn" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center" android:text="Notes" android:textSize="13sp" android:background="@android:color/transparent" android:textColor="#686BFF"/>
-        </androidx.cardview.widget.CardView>
+    <EditText android:id="@+id/searchEt" android:layout_marginTop="10dp" android:layout_margin="10dp" android:layout_width="match_parent" android:layout_height="50dp" android:padding="10dp" android:background="@drawable/rectangle_1" android:textColor="@color/black" android:textSize="20sp" android:hint="Search" android:textColorHint="@color/dark_grey" android:drawableLeft="?android:attr/actionModeWebSearchDrawable"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="0dp" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView android:id="@+id/searchNotesRv" android:layout_width="match_parent" android:layout_height="wrap_content" tools:listitem="@layout/row_notes"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent" android:layout_height="match_parent" tools:context=".user_search_all_fragment">
-             <FrameLayout
-                 android:id="@+id/fragment_search_container"
-                 android:layout_margin="10dp"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"/>
-    </FrameLayout>
 
 </LinearLayout>

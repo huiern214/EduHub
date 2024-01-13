@@ -32,7 +32,8 @@ public class user_filterNote extends Filter {
 
             for (int i=0; i<filterList.size(); i++){
                 //Validate
-                if (filterList.get(i).getResource_name().toUpperCase().contains(constraint)){
+                if (filterList.get(i).getResource_name().toUpperCase().contains(constraint)
+                || filterList.get(i).getResource_description().toUpperCase().contains(constraint)){
                     //Add to filtered list
                     filteredModels.add(filterList.get(i));
                 }

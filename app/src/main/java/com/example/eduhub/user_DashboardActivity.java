@@ -31,7 +31,6 @@ public class user_DashboardActivity extends AppCompatActivity {
     //Bottom Navigation
     BottomNavigationView bottomNavigationView;
     user_HomeFragment homeFragment = new user_HomeFragment();
-    user_shortsFragment shortsFragment = new user_shortsFragment();
     user_calendarFragment calendarFragment = new user_calendarFragment();
     user_profileFragment profileFragment = new user_profileFragment();
 
@@ -89,37 +88,8 @@ public class user_DashboardActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.home) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, homeFragment).commit();
                     return true;
-                } else if (item.getItemId() == R.id.shorts) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, shortsFragment).commit();
-                    return true;
                 } else if (item.getItemId() == R.id.upload) {
-                    uploadDialog.setContentView(R.layout.dialog_upload_materials);
-                    uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-                    // Find views from uploadDialog
-//                    Button uploadNote = uploadDialog.findViewById(R.id.uploadNotesBtn);
-//                    Button uploadVideo = uploadDialog.findViewById(R.id.uploadVideoBtn);
-
-                    uploadNote.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startActivity(new Intent(user_DashboardActivity.this, user_uploadNotes.class));
-                            uploadDialog.dismiss(); // Dismiss the dialog after starting the new activity
-                        }
-                    });
-
-                    uploadVideo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Handle the click for uploading video
-                            // You can open a new dialog, perform an action, or navigate to another screen
-                            // For example, you can show a Toast message for demonstration purposes
-                            Toast.makeText(user_DashboardActivity.this, "Upload Video Clicked", Toast.LENGTH_SHORT).show();
-                            uploadDialog.dismiss(); // Dismiss the dialog after handling the click
-                        }
-                    });
-
-                    uploadDialog.show();
+                    startActivity(new Intent(user_DashboardActivity.this, user_uploadNotes.class));
                     return true;
                 } else if (item.getItemId() == R.id.calender) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, calendarFragment).commit();

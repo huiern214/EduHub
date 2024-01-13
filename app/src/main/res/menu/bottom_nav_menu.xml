@@ -9,12 +9,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/shorts"
-        android:icon="@drawable/video"
-        android:title="Shorts"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/upload"
         android:icon="@drawable/add"
         android:title="Upload"
